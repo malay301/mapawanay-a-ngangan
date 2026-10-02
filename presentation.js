@@ -117,7 +117,7 @@ directScene('你把手機蓋回床上。', sprop('you', 'phone', 'place', [39, 4
 directScene('你把鐵盒放到地上，用面紙壓住割到的地方。', sprop('you', 'box', 'place', [150, 54]), spose('you', 'bow', 'worried'));
 directScene('你把那張紙攤開。', sprop('you', 'tengben', 'open'));
 directScene('你沒多想，隨後把它放回鐵盒。', sprop('you', 'hanky', 'place', [150, 54]));
-directScene('一個戴棒球帽的男人站起來，朝你揮手。', spose('shichang', 'stand', 'happy'), spose('shichang', 'wave', 'happy'));
+directScene('一個戴棒球帽的男人站起來，朝你揮手。', spose('shichang', 'wave', 'happy')); // 「他坐回去」的動作已刪，所以這裡也不站起來，免得世昌一直站著
 directScene('她笑了一下，把桌邊的一疊舊報紙推整齊。', spose('yuzhen', 'nod', 'happy'), sprop('yuzhen', 'paper', 'place', [104, 69]));
 directScene('他推了一下眼鏡，把資料夾往腿上壓了壓。', spose('wenbin', 'glasses'), sprop('wenbin', 'archive', 'fold'));
 directScene('你繞了桌子一圈，回到空著的那張紅椅子。', swalk('you', [2, 2]), swalk('you', [9, 2]), swalk('you', [9, 7]), swalk('you', [7, 6], 1), spose('you', 'sit'));

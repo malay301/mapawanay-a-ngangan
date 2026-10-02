@@ -108,7 +108,7 @@ try {
   await evaluate("S.items.push('tengben');doDoor('down');for(let i=0;i<80 && U.dlg;i++){if(U.cinema)finishScene();if(!U.dlg)break;U.dlg.n=U.dlg.t.length;U.skipGuard=0;advance()}");
   assert.equal(await evaluate('curMap()'), 'hall');
   assert.deepEqual(await evaluate('S.stageProps.hall.tengben'), [136, 72]);
-  assert.equal(await evaluate('S.stageActors.shichang.seated'), true);
+  assert.equal(await evaluate('!(S.stageActors.shichang && S.stageActors.shichang.seated === false)'), true, 'shichang is not left standing');
   console.log('PASS authored room-to-hall sequence and greeting');
 
   await evaluate('S.card=2;enterCard();for(let i=0;i<20 && U.dlg;i++){if(U.cinema)finishScene();if(!U.dlg)break;U.dlg.n=U.dlg.t.length;U.skipGuard=0;advance()}');
