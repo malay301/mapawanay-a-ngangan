@@ -2474,8 +2474,8 @@ cvs.addEventListener('click', ev => {
   let cx = Math.round(Math.max(0, Math.min(M.w * TS - VW * TS, ppx + 8 - VW * TS / 2))), cy = Math.round(Math.max(0, Math.min(M.h * TS - VH * TS, ppy + 8 - VH * TS / 2)));
   const tx = Math.floor((sx + cx) / TS), ty = Math.floor((sy + cy) / TS);
   // 點到高的家具（衣櫃、檳榔樹）上半部也算
-  let e = entAt(tx, ty); if (!e) e = entAt(tx, ty + 1);
-  if (e && e.act) { const t = e.tiles.find(t => t[0] === tx && (t[1] === ty || t[1] === ty + 1)) || e.tiles[0]; return goTo(t[0], t[1]); }
+  let e = entAt(tx, ty); if (!e) e = entAt(tx, ty + 1); if (!e) e = entAt(tx, ty - 1);
+  if (e && e.act) { const t = e.tiles.find(t => t[0] === tx && Math.abs(t[1] - ty) <= 1) || e.tiles[0]; return goTo(t[0], t[1]); }
   goTo(tx, ty);
 });
 document.addEventListener('click', ev => {

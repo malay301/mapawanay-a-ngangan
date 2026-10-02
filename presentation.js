@@ -116,9 +116,9 @@ directScene('床上躺著你的手機，你拿起來看，共有三十七則訊�
 directScene('你把手機蓋回床上。', sprop('you', 'phone', 'place', [39, 49]));
 directScene('衣櫃門一拉開，樟腦丸的味道整個撲上來。', spose('you', 'reach'), sprop('you', 'box', 'open'));
 directScene('最底層壓著一個生鏽的鐵盒。鏽把盒蓋咬得很緊，你用指甲去扳。', sprop('you', 'box', 'open'));
-directScene('你把鐵盒放到地上，用面紙壓住割到的地方。', sprop('you', 'box', 'place', [151, 60]), spose('you', 'bow', 'worried'));
+directScene('你把鐵盒放到地上，用面紙壓住割到的地方。', sprop('you', 'box', 'place', [150, 54]), spose('you', 'bow', 'worried'));
 directScene('你把那張紙攤開。', sprop('you', 'tengben', 'open'));
-directScene('你沒多想，隨後把它放回鐵盒。', sprop('you', 'hanky', 'place', [151, 60]));
+directScene('你沒多想，隨後把它放回鐵盒。', sprop('you', 'hanky', 'place', [150, 54]));
 directScene('你掀開後，發現米缸是滿的，而且還是新糯米，白得發亮，甚至還帶有一點糯米糠的香。', sprop('you', 'rice', 'open'));
 directScene('一個戴棒球帽的男人站起來，朝你揮手。', spose('shichang', 'stand', 'happy'), spose('shichang', 'wave', 'happy'));
 directScene('他坐回去，翻開一本筆記本。筆記本很厚，貼滿了便利貼，邊邊都捲起來了。', spose('shichang', 'sit'), sprop('shichang', 'notebook', 'open'));
@@ -436,9 +436,12 @@ function drawSmallProp(g, item, x, y) {
   else if (item === 'qu' || item === 'cup') R(g, '#c7c6af', x, y, 8, 2);
   else { R(g, '#968669', x + 1, y + 2, 6, 1); R(g, '#968669', x + 1, y + 4, 4, 1); }
 }
+const ENTITY_ITEMS = { room: ['box', 'hanky', 'phone', 'rice', 'betel'] };
 function drawStageProps(g, cx, cy) {
   if (!S) return;
-  for (const [item, at] of Object.entries((S.stageProps || {})[curMap()] || {})) drawSmallProp(g, item, at[0] - cx, at[1] - cy);
+  // 地圖上已有實體的物品（例如鐵盒、手機），放下後不另外畫一份，避免出現點不到的複製品
+  const owned = ENTITY_ITEMS[curMap()] || [];
+  for (const [item, at] of Object.entries((S.stageProps || {})[curMap()] || {})) if (!owned.includes(item)) drawSmallProp(g, item, at[0] - cx, at[1] - cy);
   const c = U.cinema;
   if (!c || c.active.type !== 'prop') return;
   const s = c.active, a = c.actor, t = Math.min(1, c.elapsed / c.duration), hand = [a.x * TS + 12, a.y * TS + (a.seated ? 2 : 6)];
