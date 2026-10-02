@@ -128,6 +128,10 @@ button, input { font: inherit; color: inherit; }
 .cg span { font-size: 13px; background: #000; border: 2px solid var(--straw); color: var(--straw); padding: 0 10px; }
 @media (prefers-reduced-motion: no-preference) { .cg canvas { animation: pop .22s steps(4) both; } .stand { animation: slide .18s steps(3) both; } @keyframes pop { from { transform: scale(.85); opacity: .3; } } @keyframes slide { from { transform: translateY(8%); opacity: .4; } } }
 .stand { position: absolute; bottom: 0; height: 72%; aspect-ratio: 40 / 48; image-rendering: pixelated; pointer-events: none; filter: drop-shadow(0 0 0 #000); }
+.scene-controls { position: absolute; left: 8px; bottom: 8px; z-index: 8; display: flex; align-items: center; gap: 8px; padding: 4px 8px; background: #17121fe8; color: #e9dfc8; font-size: 13px; }
+.scene-controls button { font: inherit; color: #ffe0a0; background: #342a3f; border: 1px solid #96805d; padding: 8px 10px; cursor: pointer; }
+.scene-controls button:focus-visible { outline: 2px solid #ffe0a0; }
+.emotion { font-size: 12px; color: var(--muted); margin-left: 8px; }
 .stand.r { right: 3%; } .stand.l { left: 3%; }
 .introc { place-content: stretch; background: repeating-linear-gradient(135deg, #12101e 0 10px, #161427 10px 20px); padding: 10px; text-align: left; justify-items: stretch; }
 .ic { display: grid; grid-template-columns: 42% minmax(0, 1fr); gap: 10px; align-items: end; height: 100%; }
@@ -170,15 +174,17 @@ button, input { font: inherit; color: inherit; }
       <canvas class="stand" id="stand" width="40" height="48" hidden></canvas>
       <div class="cg" id="cg" hidden><canvas id="cgc" width="96" height="72"></canvas><span id="cgn"></span></div>
       <div class="toasts" id="toasts" aria-live="polite"></div>
+      <div class="scene-controls" id="scene-controls" hidden><span>演出中</span><button id="skip-scene" type="button">略過動作</button></div>
       <div class="cover" id="cover" hidden></div>
     </div>
     <div class="box" id="box" aria-live="polite"></div>
     <div class="panel" id="panel" hidden></div>
   </div>
-  <p class="help" id="help">點地板走過去，點人或東西就會走過去互動。鍵盤：方向鍵移動，空白鍵說話、翻頁。</p>
+  <p class="help" id="help">點地板走過去，點人或東西就會走過去互動。鍵盤：方向鍵移動，空白鍵說話、翻頁。演出時可按「略過動作」或 Esc。</p>
   <section class="end" id="end" hidden></section>
 </div>
 
+<script src="presentation.js"></script>
 <script>
 const X = null;
 // ================= 像素美術：地圖、圖塊、角色 =================
@@ -356,12 +362,12 @@ function fTable(g, x, y, s) {
   R(g, '#e8e2d2', x + 10, y + 6, 3, 3); R(g, '#e8e2d2', x + 80, y + 15, 3, 3); R(g, '#e8e2d2', x + 45, y + 18, 3, 3);
   const it = s.items || [];
   if (s.ch >= 2 && s.place && /hall[23]/.test(s.place)) {
-    if (it.includes('tengben')) { R(g, '#d9c48f', x + 20, y + 5, 10, 7); R(g, '#9a8656', x + 21, y + 7, 8, 1); }
-    if (it.includes('letter')) { R(g, '#ece6d6', x + 34, y + 12, 9, 8); R(g, '#8c8676', x + 35, y + 14, 6, 1); R(g, '#8c8676', x + 35, y + 16, 5, 1); }
-    if (it.includes('photo')) { R(g, '#cfcabb', x + 52, y + 6, 8, 9); R(g, '#666', x + 53, y + 7, 6, 6); R(g, '#221a14', x + 58, y + 6, 2, 3); }
-    if (it.includes('qu')) { R(g, '#c9b98b', x + 64, y + 13, 4, 3); R(g, '#b9a878', x + 69, y + 12, 3, 3); R(g, '#3b5aa8', x + 63, y + 16, 10, 2); }
-    if (it.includes('fragment')) R(g, '#15100c', x + 84, y + 5, 3, 2);
-    if (it.includes('archive')) { R(g, '#e3dfd2', x + 72, y + 4, 9, 8); R(g, '#8c8676', x + 73, y + 6, 7, 1); R(g, '#8c8676', x + 73, y + 8, 7, 1); }
+    if (it.includes('tengben') && !s.stagedItems?.hall?.includes('tengben')) { R(g, '#d9c48f', x + 20, y + 5, 10, 7); R(g, '#9a8656', x + 21, y + 7, 8, 1); }
+    if (it.includes('letter') && !s.stagedItems?.hall?.includes('letter')) { R(g, '#ece6d6', x + 34, y + 12, 9, 8); R(g, '#8c8676', x + 35, y + 14, 6, 1); R(g, '#8c8676', x + 35, y + 16, 5, 1); }
+    if (it.includes('photo') && !s.stagedItems?.hall?.includes('photo')) { R(g, '#cfcabb', x + 52, y + 6, 8, 9); R(g, '#666', x + 53, y + 7, 6, 6); R(g, '#221a14', x + 58, y + 6, 2, 3); }
+    if (it.includes('qu') && !s.stagedItems?.hall?.includes('qu')) { R(g, '#c9b98b', x + 64, y + 13, 4, 3); R(g, '#b9a878', x + 69, y + 12, 3, 3); R(g, '#3b5aa8', x + 63, y + 16, 10, 2); }
+    if (it.includes('fragment') && !s.stagedItems?.hall?.includes('fragment')) R(g, '#15100c', x + 84, y + 5, 3, 2);
+    if (it.includes('archive') && !s.stagedItems?.hall?.includes('archive')) { R(g, '#e3dfd2', x + 72, y + 4, 9, 8); R(g, '#8c8676', x + 73, y + 6, 7, 1); R(g, '#8c8676', x + 73, y + 8, 7, 1); }
   }
 }
 function fStool(g, x, y) { R(g, 'rgba(0,0,0,.25)', x + 3, y + 12, 10, 3); R(g, PAL.ol, x + 2, y + 3, 12, 10); R(g, '#b8333a', x + 3, y + 4, 10, 8); R(g, '#d4545a', x + 4, y + 4, 8, 2); R(g, '#7e1f26', x + 7, y + 7, 2, 2); }
@@ -385,8 +391,8 @@ const CHAR = {
 };
 const SPR = {};
 // dir: 0 下 1 上 2 右 3 左；frame 0 站 1/2 走；seated 坐
-function sprite(who, dir, frame, seated) {
-  const key = who + dir + frame + (seated ? 's' : '');
+function sprite(who, dir, frame, seated, emotion = 'neutral') {
+  const key = who + dir + frame + (seated ? 's' : '') + emotion;
   if (SPR[key]) return SPR[key];
   const c = CHAR[who], G = [];
   for (let i = 0; i < 16; i++) G.push(new Array(16).fill(null));
@@ -416,6 +422,13 @@ function sprite(who, dir, frame, seated) {
     if (c.style === 'thin') { set(4, 5, c.hair); set(5, 5, c.hair); }
     hr(6, 10, 7, c.skin); set(10, 5, eye);
     if (c.style === 'long') for (let y = 5; y <= 10; y++) { set(4, y, c.hair); set(5, y, c.hair); if (y > 6) set(6, y, c.hair); }
+  }
+  if (d === 0 && emotion !== 'neutral') {
+    hr(6, 9, 6, c.skin); hr(7, 8, 7, c.skin);
+    if (emotion === 'happy' || emotion === 'gentle') { set(6, 6, eye); set(9, 6, eye); hr(7, 8, 7, eye); }
+    else if (emotion === 'angry') { set(6, 4, eye); set(9, 4, eye); hr(7, 8, 6, eye); }
+    else if (emotion === 'surprised') { hr(7, 8, 6, eye); hr(7, 8, 7, eye); }
+    else { set(7, 4, eye); set(8, 4, eye); hr(7, 8, 6, eye); }
   }
   // 身體
   const top = 8;
@@ -459,7 +472,8 @@ function sprite(who, dir, frame, seated) {
 }
 function drawChar(g, who, x, y, dir, frame, seated) {
   if (!seated) { R(g, 'rgba(0,0,0,.28)', x + 4, y + 14, 8, 2); R(g, 'rgba(0,0,0,.18)', x + 3, y + 15, 10, 1); }
-  g.drawImage(sprite(who, dir, frame, seated), x, y + (seated ? -3 : -2));
+  const emotion = U.dlg && (U.dlg.actor || BUSTOF(U.dlg.w)) === who ? U.dlg.emotion : 'neutral';
+  g.drawImage(sprite(who, dir, frame, seated, emotion), x, y + (seated ? -3 : -2));
 }
 function portrait(who) {
   const key = 'p' + who; if (SPR[key]) return SPR[key];
@@ -478,8 +492,9 @@ const BUSTS = {
   jianhe: { skin: '#d49c77', hair: '#1c1818', style: 'neat', cloth: '#4f7d45', top: 'tee', mouth: 'smile', phones: true },
   wenbin: { skin: '#e0b18f', hair: '#4f4a45', style: 'part', cloth: '#d6d5c8', top: 'vest', mouth: 'flat', glasses: true }
 };
-function bust(who) {
-  const key = 'b' + who; if (SPR[key]) return SPR[key];
+function bust(who, emotion = 'neutral') {
+  if (!EMOTIONS[emotion]) emotion = 'neutral';
+  const key = 'b' + who + ':' + emotion; if (SPR[key]) return SPR[key];
   const B = BUSTS[who], W = 40, H = 48, G = [];
   for (let i = 0; i < H; i++) G.push(new Array(W).fill(null));
   const set = (x, y, c) => { if (x >= 0 && x < W && y >= 0 && y < H) G[y][x] = c; };
@@ -506,12 +521,15 @@ function bust(who) {
   for (let y = 18; y <= 23; y++) { set(9, y, sk); set(30, y, skD); } set(10, 20, skD); set(29, 20, shade(skD, -.1));
   // 眉眼
   const eyeC = '#2a1d1d', brow = B.old ? '#a8a49c' : shade(hc, -.1);
+  if (emotion === 'neutral') {
   if (B.old) { hr(13, 17, 16, brow); hr(22, 26, 16, brow); hr(13, 16, 17, brow); hr(23, 26, 17, brow); hr(14, 16, 20, eyeC); hr(23, 25, 20, eyeC); set(15, 19, skD); set(24, 19, skD); }
   else { hr(13, 16, 16, brow); hr(23, 26, 16, brow); hr(13, 16, 19, eyeC); hr(23, 26, 19, eyeC); set(13, 20, '#f2ece2'); hr(14, 15, 20, '#3a2418'); set(16, 20, '#f2ece2'); set(23, 20, '#f2ece2'); hr(24, 25, 20, '#3a2418'); set(26, 20, '#f2ece2'); set(15, 20, '#1a1010'); set(25, 20, '#1a1010'); set(14, 20, '#5a3a28'); }
+  }
   // 鼻、嘴
   set(20, 22, skD); set(20, 23, skD); hr(19, 21, 24, skD); set(18, 24, skL);
   const lip = shade(sk, -.32);
-  if (B.mouth === 'frown') { hr(18, 21, 27, lip); set(17, 28, lip); set(22, 28, lip); }
+  if (emotion !== 'neutral') expressionFace({ set, hr, skD, lip, eyeC, brow }, emotion);
+  else if (B.mouth === 'frown') { hr(18, 21, 27, lip); set(17, 28, lip); set(22, 28, lip); }
   else if (B.mouth === 'smile') { hr(18, 21, 27, lip); set(17, 26, lip); set(22, 26, lip); }
   else if (B.mouth === 'grin') { hr(17, 22, 27, lip); hr(18, 21, 28, '#f0ece2'); set(23, 26, lip); }
   else hr(18, 21, 27, lip);
@@ -1304,8 +1322,8 @@ let U = { overlay: null, home: !!(S && S.started) };
 function save() { LS.set('game', S); }
 
 // ---- 敘事動作 ----
-function say(who, t) { S.log.push({ w: who, t }); }
-function act(t) { S.log.push({ w: null, t }); }
+function say(who, t, emotion = LINE_EMOTIONS.get(t) || 'neutral') { S.log.push({ w: who, t, emotion }); }
+function act(t, steps = NARRATIVE_CUES.get(t)) { S.log.push({ w: null, t, ...(steps ? { steps } : {}) }); }
 function hostline(t) { S.log.push({ w: '#', t }); }
 function divider(t) { S.log.push({ w: '-', t }); }
 function show(id) { S.log.push({ w: '^', t: id }); }
@@ -1942,8 +1960,8 @@ const ISSPK = w => !!(w && w !== '#' && (PEOPLE[w] || w === 'you' || SPEAKERS[w]
 // ---------- 玩家與地圖 ----------
 const P = { x: 5, y: 6, dir: 1, moving: false, t: 0, fx: 5, fy: 6, path: [], goal: null, step: 0 };
 function curMap() { return (S && S.rpg && S.rpg.map) || 'out'; }
-function setMap(m, x, y, dir) { S.rpg = { map: m, x, y, dir }; P.x = P.fx = x; P.y = P.fy = y; P.dir = dir; P.moving = false; P.path = []; P.goal = null; U.fade = RM ? 0 : 1; }
-function syncP() { if (S && S.rpg) { P.x = P.fx = S.rpg.x; P.y = P.fy = S.rpg.y; P.dir = S.rpg.dir; } }
+function setMap(m, x, y, dir) { S.stageActors = {}; U.playerSeated = false; S.rpg = { map: m, x, y, dir }; P.x = P.fx = x; P.y = P.fy = y; P.dir = dir; P.moving = false; P.path = []; P.goal = null; U.fade = RM ? 0 : 1; }
+function syncP() { if (S && S.rpg) { P.x = P.fx = S.rpg.x; P.y = P.fy = S.rpg.y; P.dir = S.rpg.dir; U.playerSeated = !!S.rpg.seated; } }
 
 const SEATS = { mingde: [4, 3, 0], yuzhen: [6, 3, 0], shichang: [8, 3, 0], jianhe: [3, 6, 1], wenbin: [5, 6, 1] };
 const OUTNPC = { mingde: [10, 1, 1, 'back'], yuzhen: [2, 5, 3, 'kitchen'], jianhe: [5, 8, 0, 'yard'], shichang: [15, 9, 2, 'porch'] };
@@ -1973,6 +1991,12 @@ function ents() {
     L.push({ id: 'betel', tiles: [[2, 10]], draw: fBetel, act: () => act('樹幹上留著幾道舊痕，葉子在屋簷上方擦出沙沙聲。你記得阿公說過，這棵是他種的。') });
     if (S.ch === 2 && S.place !== 'hall2') for (const w in OUTNPC) { if (w === 'mingde' && S.flags.mdBack) continue; const [nx, ny, d] = OUTNPC[w]; L.push({ id: w, npc: w, tiles: [[nx, ny]], dir: d, noTurn: w === 'mingde', act: () => talkOut(w), hint: () => npcHint(w) }); }
   }
+  for (const [who, a] of Object.entries(S.stageActors || {})) {
+    let e = L.find(e => e.npc === who);
+    if (a.hidden) { if (e) L.splice(L.indexOf(e), 1); continue; }
+    if (!e) { e = { id: who, npc: who, act: () => curMap() === 'hall' ? talkHall(who) : talkOut(who) }; L.push(e); }
+    Object.assign(e, { tiles: [[a.x, a.y]], dir: a.dir, seated: a.seated, z: a.y * TS + 1 });
+  }
   return L;
 }
 function hallPeople() {
@@ -2000,8 +2024,9 @@ function walkable(x, y) { const m = curMap(); if (DOORS[m][x + ',' + y]) return 
 
 // ---------- 走動 ----------
 const DIRS = [[0, 1], [0, -1], [1, 0], [-1, 0]];
-function canWalk() { return S && !U.home && !S.card && S.beat !== 'end' && !U.dlg && !U.menu && !U.panel && !S.pending && S.mode !== 'puzzle' && S.ch !== 3 && !U.waiting; }
+function canWalk() { return !U.cinema && S && !U.home && !S.card && S.beat !== 'end' && !U.dlg && !U.menu && !U.panel && !S.pending && S.mode !== 'puzzle' && S.ch !== 3 && !U.waiting; }
 function tryStep(d) {
+  U.playerSeated = false;
   P.dir = d; const nx = P.x + DIRS[d][0], ny = P.y + DIRS[d][1], m = curMap();
   const door = DOORS[m][nx + ',' + ny];
   if (door) { doDoor(door); return false; }
@@ -2066,7 +2091,7 @@ function doDoor(d) {
   if (m === 'room') {
     if (S.ch === 1) {
       if (!S.items.includes('tengben')) { act('阿公的東西還沒整理完。先看看房間裡有什麼。'); return flow(); }
-      const o = ROOM.objects.find(x => x.id === 'go'); setMap('hall', 2, 2, 0); o.run(S); return flow();
+      const o = ROOM.objects.find(x => x.id === 'go'); o.run(S); return flow();
     }
     setMap('hall', 2, 2, 0); S.place = 'map'; return flow();
   }
@@ -2158,7 +2183,7 @@ function judge(b, k, id) {
   tick(10);
   if (b.ok(S, k, id)) return b.run(S, k, id);
   if (k === 'who') { say('you', `${PEOPLE[id].name}，你怎麼看？`); say(id, (b.miss && b.miss[id]) || '這個……我不清楚。'); return; }
-  act(k === 'item' ? `你把${ITEMS[id].name}放到${PEOPLE[b.who].name}面前。` : `你提起筆記上的一條：「${FACTS[id][2]}」`);
+  act(k === 'item' ? `你把${ITEMS[id].name}放到${PEOPLE[b.who].name}面前。` : `你提起筆記上的一條：「${FACTS[id][2]}」`, k === 'item' ? [Stage.prop('you', id, 'place', [SEATS[b.who][0] * TS + 8, SEATS[b.who][1] < 4 ? 70 : 84])] : undefined);
   const L = WRONG[b.who] || WRONG.mingde; S.wrongN = (S.wrongN || 0) + 1; say(b.who, L[S.wrongN % L.length]);
   if (b.who === 'mingde' && !S.flags.mdHurt) {
     S.pat--;
@@ -2178,6 +2203,7 @@ function tableAct() {
 // ---------- 流程 ----------
 function setMenu(key, title, opts) { if (U.mkey !== key || !U.keepSel) { U.msel = Math.max(0, opts.findIndex(o => !o.dis)); U.mkey = key; } U.menu = { key, title, opts }; }
 function flow() {
+  if (U.cinema) return;
   while (S && U.cur < S.log.length) {
     const e = S.log[U.cur++];
     if (e.w === '+') { toast('筆記本＋ ' + e.t, 'note'); continue; }
@@ -2186,7 +2212,9 @@ function flow() {
     if (e.w === '^') { U.cg = e.t || null; continue; }
     if (e.w === '~') { U.silent = !!e.t; BGM.update(); continue; }
     if (e.w === '@') { U.dlg = { w: '@', t: '', n: 0, who: e.t }; U.cg = null; U.menu = null; return render(); }
-    U.dlg = { w: e.w, t: e.t, n: 0 }; U.menu = null; return render();
+    U.dlg = { w: e.w, t: e.t, n: 0, emotion: e.emotion || LINE_EMOTIONS.get(e.t) || 'neutral' }; U.menu = null;
+    startScene(e.steps || (e.w === null ? NARRATIVE_CUES.get(e.t) : null));
+    return render();
   }
   U.dlg = null; U.cg = null;
   if (U.pendingPanel) { U.panel = U.pendingPanel; U.pendingPanel = null; if (U.panel === 'nb') S.newFacts = 0; render(); return save(); }
@@ -2209,6 +2237,7 @@ function autoPrompt() {
   if (S.place === 'hall2' && needDone() && !S.flags.end2 && !S.done.end2Offer) { S.done.end2Offer = 1; setMenu('end2', '◆ 的事都有了一些答案。', [{ label: '把桌上的整理一下', cls: 'pri', fn: end2 }, { label: '再問問看別的（之後到桌邊整理）', fn: () => {} }]); }
 }
 function choose(i) {
+  if (U.cinema) return;
   const m = U.menu; if (!m) return; const o = m.opts[i]; if (!o || o.dis) return;
   U.msel = i; U.keepSel = !!o.keep; if (!o.keep) U.menu = null;
   o.fn();
@@ -2218,6 +2247,7 @@ function choose(i) {
 function advance() {
   if (!U.dlg) return;
   if (U.dlg.n < U.dlg.t.length) { U.dlg.n = U.dlg.t.length; return paintBox(); }
+  if (U.cinema) return;
   flow();
 }
 
@@ -2243,6 +2273,8 @@ function clockText() {
 }
 function render() {
   const home = !S || U.home;
+  $('scene-controls').hidden = home || !U.cinema;
+  $('mbtn').disabled = !!U.cinema;
   $('end').hidden = true; $('game').hidden = false; $('help').hidden = false;
   if (S && S.beat === 'end' && !home && !U.dlg) { BGM.update(); $('game').hidden = true; $('help').hidden = true; $('end').hidden = false; $('end').innerHTML = endHTML(); return; }
   BGM.update(); const sbt = $('sbtn'); sbt.textContent = BGM.on ? '音樂開' : '音樂關'; sbt.classList.toggle('off', !BGM.on); sbt.setAttribute('aria-pressed', BGM.on); sbt.hidden = home;
@@ -2257,9 +2289,9 @@ function render() {
   else cv.hidden = true;
   // 特寫與立繪
   const cgEl = $('cg');
-  if (!home && U.cg && ART[U.cg] && !U.panel) { cgEl.hidden = false; const cc = $('cgc').getContext('2d'); cc.imageSmoothingEnabled = false; cc.drawImage(artCanvas(U.cg), 0, 0); $('cgn').textContent = ARTNAME[U.cg] || ''; } else cgEl.hidden = true;
-  const st = $('stand'), sw = U.dlg && U.dlg.w, sb = sw && ISSPK(sw) ? BUSTOF(sw) : null;
-  if (!home && sb && !U.cg && !U.panel) { const sc = st.getContext('2d'); sc.clearRect(0, 0, 40, 48); sc.drawImage(bust(sb), 0, 0); st.className = 'stand ' + (sw === 'you' ? 'l' : 'r'); if (st.dataset.w !== sw) { st.hidden = true; void st.offsetWidth; } st.dataset.w = sw; st.hidden = false; } else { st.hidden = true; st.dataset.w = ''; }
+  if (!home && !U.cinema && U.cg && ART[U.cg] && !U.panel) { cgEl.hidden = false; const cc = $('cgc').getContext('2d'); cc.imageSmoothingEnabled = false; cc.drawImage(artCanvas(U.cg), 0, 0); $('cgn').textContent = ARTNAME[U.cg] || ''; } else cgEl.hidden = true;
+  const st = $('stand'), sw = U.dlg && (U.dlg.actor || U.dlg.w), sb = sw && ISSPK(sw) ? BUSTOF(sw) : null;
+  if (!home && !U.cinema && sb && !U.cg && !U.panel) { const sc = st.getContext('2d'); sc.clearRect(0, 0, 40, 48); sc.drawImage(bust(sb, U.dlg.emotion), 0, 0); st.setAttribute('aria-label', NAMEOF(sw) + '：' + EMOTIONS[U.dlg.emotion || 'neutral']); st.className = 'stand ' + (sw === 'you' ? 'l' : 'r'); if (st.dataset.w !== sw) { st.hidden = true; void st.offsetWidth; } st.dataset.w = sw; st.hidden = false; } else { st.hidden = true; st.dataset.w = ''; }
   // 面板
   const pn = $('panel');
   pn.className = 'panel' + (home ? ' homep' : '');
@@ -2278,8 +2310,8 @@ function paintBox() {
     const d = U.dlg, w = d.w, isP = ISSPK(w), pb = isP ? BUSTOF(w) : null;
     const cls = w === 'you' ? 'you' : w === '#' ? 'host nar' : isP ? '' : 'nar';
     const shown = d.t.slice(0, d.n);
-    bx.innerHTML = `<div class="dlg ${cls}${isP && !pb ? ' nopor' : ''}" data-adv="1">${pb ? '<canvas class="por" width="32" height="32"></canvas>' : ''}<div>${isP ? `<span class="nm">${NAMEOF(w)}</span>` : w === '#' ? '<span class="nm" style="color:var(--host)">——</span>' : ''}<p class="tx">${esc(shown).replace(/§/g, '')}</p></div></div>${d.n >= d.t.length ? '<span class="more">▼</span>' : ''}`;
-    if (pb) { const pc = bx.querySelector('.por').getContext('2d'); pc.imageSmoothingEnabled = false; pc.drawImage(bust(pb), 4, 3, 32, 32, 0, 0, 32, 32); }
+    bx.innerHTML = `<div class="dlg ${cls}${isP && !pb ? ' nopor' : ''}" data-adv="1">${pb ? '<canvas class="por" width="32" height="32"></canvas>' : ''}<div>${isP ? `<span class="nm">${NAMEOF(w)}<span class="emotion">${EMOTIONS[d.emotion || 'neutral']}</span></span>` : w === '#' ? '<span class="nm" style="color:var(--host)">——</span>' : ''}<p class="tx">${esc(shown).replace(/§/g, '')}</p></div></div>${d.n >= d.t.length && !U.cinema ? '<span class="more">▼</span>' : ''}`;
+    if (pb) { const pc = bx.querySelector('.por').getContext('2d'); pc.imageSmoothingEnabled = false; pc.drawImage(bust(pb, d.emotion), 4, 3, 32, 32, 0, 0, 32, 32); }
     return;
   }
   if (U.menu) {
@@ -2372,6 +2404,8 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 function update(dt) {
+  if (U.fade > 0) U.fade = Math.max(0, U.fade - dt / 260);
+  if (U.cinema) { updateScene(dt); return; }
   if (P.moving) {
     P.t += dt / 150;
     if (P.t >= 1) { P.moving = false; P.t = 0; P.fx = P.x; P.fy = P.y; arrive(); }
@@ -2381,31 +2415,33 @@ function update(dt) {
     else if (P.path.length) { const d = P.path.shift(); if (!tryStep(d)) { P.path = []; P.goal = null; } }
     else if (P.goal) reachGoal();
   }
-  if (U.fade > 0) U.fade = Math.max(0, U.fade - dt / 260);
 }
 function draw(now) {
   const home = !S || U.home;
   const m = home ? 'out' : curMap(), M = MAPS[m];
-  const ppx = (P.moving ? P.fx + (P.x - P.fx) * P.t : P.x) * TS, ppy = (P.moving ? P.fy + (P.y - P.fy) * P.t : P.y) * TS;
+  const scenePlayer = sceneActorFrame('you');
+  const ppx = (scenePlayer ? scenePlayer.x : P.moving ? P.fx + (P.x - P.fx) * P.t : P.x) * TS, ppy = (scenePlayer ? scenePlayer.y : P.moving ? P.fy + (P.y - P.fy) * P.t : P.y) * TS;
   let cx = home ? 4 * TS + Math.sin(now / 6000) * 2 * TS : Math.round(ppx + 8 - VW * TS / 2), cy = home ? 3 * TS : Math.round(ppy + 8 - VH * TS / 2);
+  if (!home && U.cinema) { const focus = sceneActorFrame(U.cinema.active.who); if (focus) { cx = focus.x * TS + 8 - VW * TS / 2; cy = focus.y * TS + 8 - VH * TS / 2; } }
   cx = Math.round(Math.max(0, Math.min(M.w * TS - VW * TS, cx))); cy = Math.round(Math.max(0, Math.min(M.h * TS - VH * TS, cy)));
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 192, 144);
   ctx.drawImage(mapLayer(m), -cx, -cy);
   const list = home ? [{ id: 'car', tiles: [[17, 9]], draw: fCar }, { id: 'betel', tiles: [[2, 10]], draw: fBetel }] : ents();
-  const Z = list.map(e => { const ty = Math.max(...e.tiles.map(t => t[1])), tx = Math.min(...e.tiles.map(t => t[0])), ty0 = Math.min(...e.tiles.map(t => t[1])); return { e, z: e.z != null ? e.z : ty * 16, x: tx * TS, y: ty0 * TS }; });
-  if (!home) {
-    const seatP = S.ch === 3 && m === 'hall';
-    Z.push({ e: { player: true }, z: seatP ? 6 * 16 + 1 : ppy, x: seatP ? 7 * TS : ppx, y: seatP ? 6 * TS : ppy });
+  const Z = list.map(e => { const actor = e.npc && sceneActorFrame(e.npc); if (actor) return { e, z: actor.y * TS + 1, x: actor.x * TS, y: actor.y * TS, actor }; const ty = Math.max(...e.tiles.map(t => t[1])), tx = Math.min(...e.tiles.map(t => t[0])), ty0 = Math.min(...e.tiles.map(t => t[1])); return { e, z: e.z != null ? e.z : ty * 16, x: tx * TS, y: ty0 * TS }; });
+  if (!home && !U.hidePlayer) {
+    const seatP = !U.cinema && U.playerSeated;
+    Z.push({ e: { player: true }, z: ppy + (seatP ? 1 : 0), x: ppx, y: ppy });
   }
   Z.sort((a, b) => a.z - b.z);
   for (const it of Z) {
     const e = it.e, x = it.x - cx, y = it.y - cy;
-    if (e.player) { drawChar(ctx, 'you', x, y, S.ch === 3 && m === 'hall' ? 1 : P.dir, P.moving ? (P.t < .5 ? (P.step % 2 ? 1 : 2) : 0) : 0, S.ch === 3 && m === 'hall'); continue; }
-    if (e.npc) { let d = e.dir; if (U.talkTo === e.npc && !e.noTurn) { const [ex, ey] = e.tiles[0]; const dx = P.x - ex, dy = P.y - ey; d = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 2 : 3) : (dy > 0 ? 0 : 1); } drawChar(ctx, e.npc, x, y, d, 0, e.seated); }
+    if (e.player) { const a = scenePlayer; const px = Math.round(x + (a?.ox || 0)), py = Math.round(y + (a?.oy || 0)); drawChar(ctx, 'you', px, py, a ? a.dir : P.dir, a ? a.frame : P.moving ? (P.t < .5 ? (P.step % 2 ? 1 : 2) : 0) : 0, a ? a.seated : U.playerSeated); drawStageHand(ctx, 'you', px, py); continue; }
+    if (e.npc) { let d = e.dir; if (U.talkTo === e.npc && !e.noTurn) { const [ex, ey] = e.tiles[0]; const dx = P.x - ex, dy = P.y - ey; d = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 2 : 3) : (dy > 0 ? 0 : 1); } const a = it.actor; const nx = Math.round(x + (a?.ox || 0)), ny = Math.round(y + (a?.oy || 0)); drawChar(ctx, e.npc, nx, ny, a ? a.dir : d, a ? a.frame : 0, a ? a.seated : e.seated); drawStageHand(ctx, e.npc, nx, ny); }
     else if (e.draw) e.draw(ctx, x, y);
   }
   // 提示泡泡
   if (!home && canWalk()) for (const it of Z) { const e = it.e; if (e.hint && e.hint()) { const bx = it.x - cx + 9, by = it.y - cy - 12 + (e.seated ? 0 : -2) + (Math.floor(now / 400) % 2 && !RM ? -1 : 0); R(ctx, PAL.ol, bx - 1, by - 1, 11, 7); R(ctx, '#f4efe2', bx, by, 9, 5); R(ctx, '#f4efe2', bx + 2, by + 5, 2, 2); R(ctx, '#3a3040', bx + 2, by + 2); R(ctx, '#3a3040', bx + 4, by + 2); R(ctx, '#3a3040', bx + 6, by + 2); } }
+  if (!home) drawStageProps(ctx, cx, cy);
   // 光
   const LS2 = LIGHTS[m](home ? { ch: 2 } : S);
   lg.globalCompositeOperation = 'source-over'; lg.fillStyle = `rgb(${LS2.amb})`; lg.fillRect(0, 0, 192, 144);
@@ -2434,6 +2470,8 @@ cvs.addEventListener('click', ev => {
 });
 document.addEventListener('click', ev => {
   const t = ev.target;
+  if (t.closest('#skip-scene')) return finishScene();
+  if (U.cinema && !t.closest('[data-adv]') && !t.closest('#box') && !t.closest('#sbtn')) return;
   if (t.closest('[data-adv]')) return advance();
   const o = t.closest('[data-o]'); if (o) return choose(+o.dataset.o);
   if (t.closest('[data-enter]')) return enterCard();
@@ -2446,7 +2484,7 @@ document.addEventListener('click', ev => {
   if (t.closest('#box') && U.dlg) return advance();
 });
 function homeAct(a) {
-  if (a === 'new') { try { localStorage.removeItem('bwjm.rpg2.game'); } catch (e) {} S = fresh(); Object.assign(U, { home: false, cur: 0, dlg: null, menu: null, panel: null, pendingPanel: null }); setMap('room', 5, 6, 1); window.scrollTo(0, 0); return flow(); }
+  if (a === 'new') { try { localStorage.removeItem('bwjm.rpg2.game'); } catch (e) {} S = fresh(); Object.assign(U, { cinema: null, playerSeated: false, cg: null, home: false, cur: 0, dlg: null, menu: null, panel: null, pendingPanel: null }); setMap('room', 5, 6, 1); window.scrollTo(0, 0); return flow(); }
   if (a === 'resume') { U.home = false; U.cur = S.log.length; syncP(); return flow(); }
 }
 function panelAct(a) {
@@ -2466,13 +2504,15 @@ function enterCard() {
   const n = S.card; S.card = null;
   if (n === 1) { S.ch = 1; S.place = 'room'; setMap('room', 5, 6, 1); act('阿公的東西還堆在房間裡。你站在門口，不知道要從哪裡開始。'); act('走過去，看看房間裡的東西。'); }
   if (n === 2) { S.ch = 2; S.log = []; U.cur = 0; S.place = 'map'; S.time = 21 * 60; S.dl = S.time + 50; setMap('hall', 5, 7, 1); act('長輩說分頭整理。大家散進屋子的各個角落。'); act('文彬留在桌邊。你可以去阿公的房間，也可以到屋外找人說話。準備好了，就回來找文彬。'); }
-  if (n === 3) { S.ch = 3; S.log = []; U.cur = 0; S.sel = null; setMap('hall', 7, 7, 1); goPlace('hall3'); }
+  if (n === 3) { S.ch = 3; S.log = []; U.cur = 0; S.sel = null; setMap('hall', 7, 6, 1); U.playerSeated = true; goPlace('hall3'); }
   flow();
 }
 const KEYD = { ArrowDown: 0, ArrowUp: 1, ArrowRight: 2, ArrowLeft: 3, s: 0, w: 1, d: 2, a: 3 };
 document.addEventListener('keydown', ev => {
   if (ev.target.tagName === 'INPUT') return;
   const k = ev.key;
+  if (ev.target.closest('button') && (k === 'Enter' || k === ' ')) return;
+  if (U.cinema) { if (k === 'Escape') finishScene(); else if (k === ' ' || k === 'Enter' || k === 'z') advance(); else if (!(k in KEYD)) return; ev.preventDefault(); return; }
   if (!S || U.home) return;
   if (U.panel && k === 'Escape') { panelAct('close'); ev.preventDefault(); return; }
   if (U.dlg && (k === ' ' || k === 'Enter' || k === 'z')) { advance(); ev.preventDefault(); return; }

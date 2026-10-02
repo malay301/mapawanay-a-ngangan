@@ -9,3 +9,11 @@
 - 字型：俐方體11號（Cubic 11，SIL Open Font License 1.1）。背景音樂為程式即時合成的原創配樂。
 
 部署與更新方式見〈部署說明.txt〉。
+
+角色立繪與對話頭像會隨台詞切換表情；劇情中的走位、拿取、放置、翻閱與收拾動作會在地圖上播放。演出時可按「略過動作」或 Esc，略過後仍會保留正確的位置與物品。系統開啟「減少動態效果」時會直接顯示動作完成的結果。
+
+本機開發：在專案目錄執行 `python3 -m http.server 8000`。不需要安裝套件或建置。
+
+瀏覽器回歸檢查：`node tests/presentation-smoke.mjs`（需要 Node.js 22 以上與 Chromium；可用 `CHROMIUM` 指定執行檔）。測試會使用獨立的暫存瀏覽器資料，不會改動玩家存檔。
+
+演出資料及擴充方式見 [劇情演出說明](docs/presentation.md)。部署時請一併上傳 `presentation.js` 與更新後的 `sw.js`。
