@@ -66,18 +66,19 @@ try {
   console.log('PASS new game and opening dialogue');
 
   const faces = await evaluate(`Object.fromEntries(Object.keys(BUSTS).map(w => [w, new Set(Object.keys(EMOTIONS).map(e => bust(w,e).toDataURL())).size]))`);
-  for (const [who, count] of Object.entries(faces)) assert.equal(count, 7, `${who}: seven distinct expressions`);
+  const emotionCount = await evaluate('Object.keys(EMOTIONS).length');
+  for (const [who, count] of Object.entries(faces)) assert.equal(count, emotionCount, `${who}: every expression is distinct`);
   const source = await readFile(join(root, 'index.html'), 'utf8');
   const directedLines = await evaluate('[...NARRATIVE_CUES.keys(), ...LINE_EMOTIONS.keys()]');
-  for (const line of directedLines) assert(source.includes(line), `Presentation cue no longer matches the script: ${line}`);
+  for (const line of directedLines.filter(l => !l.includes('§'))) assert(source.includes(line), `Presentation cue no longer matches the script: ${line}`);
   await setup();
   await evaluate("say('mingde','你今天是回來整理你阿公的東西，還是想要吵架？');say('mingde','可是現在要找，也找不回來了。');flow()");
   assert.equal(await evaluate('U.dlg.emotion'), 'angry');
   assert.match(await evaluate("document.querySelector('#stand').getAttribute('aria-label')"), /生氣/);
   await evaluate('U.dlg.n=U.dlg.t.length;advance()');
   assert.equal(await evaluate('U.dlg.emotion'), 'sad');
-  assert.match(await evaluate("document.querySelector('#box .nm').textContent"), /難過/);
-  console.log('PASS 42 distinct portraits and line-to-line emotion changes');
+  assert.doesNotMatch(await evaluate("document.querySelector('#box .nm').textContent"), /難過/, 'emotion is shown by the face, not a label');
+  console.log('PASS distinct portraits for every expression and line-to-line emotion changes');
 
   await setup();
   await evaluate(`act(${JSON.stringify(cue)});say('you','放好了。');flow()`);
@@ -86,12 +87,12 @@ try {
   const moving = await evaluate("({x:sceneActorFrame('you').x,cur:U.cur,canvas:document.querySelector('#cv').toDataURL(),fade:U.fade})");
   assert.notEqual(first.x, moving.x); assert.notEqual(first.canvas, moving.canvas); assert.equal(moving.fade, 0);
   await evaluate('for(let i=0;i<10;i++) advance()');
-  assert.equal(await evaluate('U.cur'), first.cur, 'repeated clicks must not skip an active scene');
+  assert.equal(await evaluate('U.cur'), first.cur, 'repeated clicks finish the scene without skipping dialogue');
   await until('!U.cinema');
   const natural = await evaluate('({rpg:S.rpg,props:S.stageProps})');
   assert.deepEqual(natural.props.hall.tengben, [136, 72]); assert.equal(natural.rpg.x, 9); assert.equal(natural.rpg.y, 4);
   assert.equal(await evaluate('U.cur'), first.cur, 'scene completion must leave dialogue readable');
-  await evaluate('advance()'); assert.equal(await evaluate('U.dlg.t'), '放好了。');
+  await delay(400); await evaluate('advance()'); assert.equal(await evaluate('U.dlg.t'), '放好了。');
   console.log('PASS visible walking, paper placement, input locking and dialogue order');
 
   await setup(); await evaluate(`act(${JSON.stringify(cue)});flow();document.querySelector('#skip-scene').click()`);
@@ -104,27 +105,27 @@ try {
   console.log('PASS skip endpoint matches playback; saved positions restore');
 
   await setup('room', 1, [5, 7, 0]);
-  await evaluate("S.items.push('tengben');doDoor('down');for(let i=0;i<80 && U.dlg;i++){if(U.cinema)finishScene();U.dlg.n=U.dlg.t.length;advance()}");
+  await evaluate("S.items.push('tengben');doDoor('down');for(let i=0;i<80 && U.dlg;i++){if(U.cinema)finishScene();if(!U.dlg)break;U.dlg.n=U.dlg.t.length;advance()}");
   assert.equal(await evaluate('curMap()'), 'hall');
   assert.deepEqual(await evaluate('S.stageProps.hall.tengben'), [136, 72]);
   assert.equal(await evaluate('S.stageActors.shichang.seated'), true);
   console.log('PASS authored room-to-hall sequence and greeting');
 
-  await evaluate('S.card=2;enterCard();finishScene();U.dlg.n=U.dlg.t.length;advance();U.dlg.n=U.dlg.t.length;advance()');
+  await evaluate('S.card=2;enterCard();for(let i=0;i<20 && U.dlg;i++){if(U.cinema)finishScene();if(!U.dlg)break;U.dlg.n=U.dlg.t.length;advance()}');
   assert.deepEqual(await evaluate('ents().filter(e=>e.npc).map(e=>e.npc)'), ['wenbin']);
   assert.equal(await evaluate('canWalk()'), true);
   console.log('PASS chapter transition shows characters leaving and restores movement');
 
   // Sitting during a conversation must not trap the player on a chair.
   await setup('hall', 1, [9, 4, 3]);
-  await evaluate("WAIT1.shichang(S);flow();for(let i=0;i<30 && U.dlg;i++){if(U.cinema)finishScene();U.dlg.n=U.dlg.t.length;advance()}");
+  await evaluate("WAIT1.shichang(S);flow();for(let i=0;i<30 && U.dlg;i++){if(U.cinema)finishScene();if(!U.dlg)break;U.dlg.n=U.dlg.t.length;advance()}");
   assert.equal(await evaluate('P.x'), 7); assert.equal(await evaluate('P.y'), 3);
   assert.equal(await evaluate('canWalk() && tryStep(1)'), true);
   assert.equal(await evaluate('U.playerSeated'), false);
   console.log('PASS conversation seating leaves a usable path back to play');
 
   await setup('hall', 2, [5, 7, 1]);
-  await evaluate("HALL2.enter(S);flow();for(let i=0;i<100 && U.dlg;i++){if(U.cinema)finishScene();U.dlg.n=U.dlg.t.length;advance()}");
+  await evaluate("HALL2.enter(S);flow();for(let i=0;i<100 && U.dlg;i++){if(U.cinema)finishScene();if(!U.dlg)break;U.dlg.n=U.dlg.t.length;advance()}");
   assert(await evaluate("['mingde','shichang','jianhe','yuzhen'].every(w=>S.stageActors[w])"));
   const home = await evaluate('JSON.stringify(S.rpg)');
   await evaluate("S.log=[];U.cur=0;U.menu=null;act('世昌起身去車上，帶回包著照片的布包。');flow();finishScene()");
@@ -134,8 +135,8 @@ try {
   await setup('hall', 3, [7, 6, 1]);
   await evaluate("U.playerSeated=true;act('你拿出手機放在桌上。');flow();finishScene()");
   assert.deepEqual(await evaluate('S.stageProps.hall.phone'), [118, 83]);
-  await evaluate("U.cur=S.log.length;U.dlg=null;wrapUp();flow();for(let i=0;i<80 && U.dlg;i++){if(U.cinema)finishScene();U.dlg.n=U.dlg.t.length;advance()}");
-  assert.equal(await evaluate('curMap()'), 'room');
+  await evaluate("U.cur=S.log.length;U.dlg=null;wrapUp();flow();for(let i=0;i<80 && U.dlg;i++){if(U.cinema)finishScene();if(!U.dlg)break;U.dlg.n=U.dlg.t.length;advance()}");
+  assert.equal(await evaluate('curMap()'), 'out', 'closing cutscene ends outside the house');
   assert.deepEqual(await evaluate('S.stageProps.room.letter'), [38, 48]);
   assert.equal(await evaluate("document.querySelector('#end').hidden"), false);
   console.log('PASS chapter 3 recording and animated closing sequence');

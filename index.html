@@ -66,6 +66,7 @@ button, input { font: inherit; color: inherit; }
 .cover h2 { margin: 0; font-weight: 400; font-size: clamp(28px, 9vw, 40px); letter-spacing: .2em; }
 .cover p { margin: 0; color: var(--muted); max-width: 22em; font-size: 14px; }
 .silence { background: rgba(4,4,8,.86); }
+@media (prefers-reduced-motion: no-preference) { .cover:not(.introc) .n { animation: cin 1.2s ease-out both; } .cover:not(.introc) h2 { animation: cin 1.6s .3s ease-out both; } .cover:not(.introc) p { animation: cin 1.6s .9s ease-out both; } @keyframes cin { from { opacity: 0; transform: translateY(6px); letter-spacing: .5em; } } }
 .silence h2 { font-size: 26px; }
 .bar { width: min(14rem, 80%); height: 6px; border: 2px solid var(--boxEdge); background: #000; }
 .bar i { display: block; height: 100%; width: 0; background: var(--straw); }
@@ -428,6 +429,9 @@ function sprite(who, dir, frame, seated, emotion = 'neutral') {
     if (emotion === 'happy' || emotion === 'gentle') { set(6, 6, eye); set(9, 6, eye); hr(7, 8, 7, eye); }
     else if (emotion === 'angry') { set(6, 4, eye); set(9, 4, eye); hr(7, 8, 6, eye); }
     else if (emotion === 'surprised') { hr(7, 8, 6, eye); hr(7, 8, 7, eye); }
+    else if (emotion === 'pain') { set(6, 4, eye); set(9, 4, eye); hr(6, 9, 6, eye); hr(7, 8, 7, '#f4efe2'); }
+    else if (emotion === 'smirk') { set(6, 4, eye); hr(7, 9, 6, eye); }
+    else if (emotion === 'serious') { hr(6, 9, 4, eye); hr(7, 8, 6, eye); }
     else { set(7, 4, eye); set(8, 4, eye); hr(7, 8, 6, eye); }
   }
   // 身體
@@ -1322,7 +1326,7 @@ let U = { overlay: null, home: !!(S && S.started) };
 function save() { LS.set('game', S); }
 
 // ---- 敘事動作 ----
-function say(who, t, emotion = LINE_EMOTIONS.get(t) || 'neutral') { S.log.push({ w: who, t, emotion }); }
+function say(who, t, emotion = emotionFor(who, t)) { S.log.push({ w: who, t, emotion }); }
 function act(t, steps = NARRATIVE_CUES.get(t)) { S.log.push({ w: null, t, ...(steps ? { steps } : {}) }); }
 function hostline(t) { S.log.push({ w: '#', t }); }
 function divider(t) { S.log.push({ w: '-', t }); }
@@ -1759,6 +1763,7 @@ function wrapUp() {
   else say('mingde', '你阿公買的糯米先留著齁。他以前說想再釀酒，我明天去問問看。');
   act('他把米缸的蓋子重新放正，發現一邊卡住，先把它放在旁邊。');
   fact('md_tomorrow');
+  S.log.push({ w: '!', steps: [Stage.fade(0, 1, 700), Stage.room('out', [10, 8, 0]), Stage.fade(1, 0, 900), swalk('you', [8, 9], 3), spose('you', 'pause', 'gentle'), Stage.wait(900), Stage.fade(0, 1, 1500)] });
   finish();
 }
 function finish() { S.beat = 'end'; S.ch = 4; S.card = null; }
@@ -2212,6 +2217,7 @@ function flow() {
     if (e.w === '^') { U.cg = e.t || null; continue; }
     if (e.w === '~') { U.silent = !!e.t; BGM.update(); continue; }
     if (e.w === '@') { U.dlg = { w: '@', t: '', n: 0, who: e.t }; U.cg = null; U.menu = null; return render(); }
+    if (e.w === '!') { U.dlg = { w: '!', t: '', n: 0, emotion: 'neutral' }; U.cg = null; U.menu = null; startScene(e.steps); if (!U.cinema) continue; return render(); }
     U.dlg = { w: e.w, t: e.t, n: 0, emotion: e.emotion || LINE_EMOTIONS.get(e.t) || 'neutral' }; U.menu = null;
     startScene(e.steps || (e.w === null ? NARRATIVE_CUES.get(e.t) : null));
     return render();
@@ -2246,8 +2252,10 @@ function choose(i) {
 }
 function advance() {
   if (!U.dlg) return;
+  // 演出中點一下：直接演完（不跳過台詞）；之後短暫忽略連點，避免一口氣點過好幾句
+  if (U.skipGuard && performance.now() < U.skipGuard) return;
+  if (U.cinema) { U.skipGuard = performance.now() + 350; return finishScene(); }
   if (U.dlg.n < U.dlg.t.length) { U.dlg.n = U.dlg.t.length; return paintBox(); }
-  if (U.cinema) return;
   flow();
 }
 
@@ -2305,12 +2313,13 @@ function paintBox() {
   const bx = $('box');
   if (!S || U.home) { bx.innerHTML = ''; return; }
   if (S.card && !U.dlg) { bx.innerHTML = `<div class="opts"><button class="opt sel pri" data-enter="1">開始</button></div>`; return; }
+  if (U.dlg && U.dlg.w === '!') { bx.innerHTML = '<div class="dlg nar" data-adv="1"><p class="tx" style="color:var(--muted)">……</p></div>'; return; }
   if (U.dlg && U.dlg.w === '@') { bx.innerHTML = `<div class="dlg nar" data-adv="1"><p class="tx" style="color:var(--muted)">${esc(INTRO[U.dlg.who].full)}｜${esc(INTRO[U.dlg.who].meet)}</p></div><span class="more">▼</span>`; return; }
   if (U.dlg) {
     const d = U.dlg, w = d.w, isP = ISSPK(w), pb = isP ? BUSTOF(w) : null;
     const cls = w === 'you' ? 'you' : w === '#' ? 'host nar' : isP ? '' : 'nar';
     const shown = d.t.slice(0, d.n);
-    bx.innerHTML = `<div class="dlg ${cls}${isP && !pb ? ' nopor' : ''}" data-adv="1">${pb ? '<canvas class="por" width="32" height="32"></canvas>' : ''}<div>${isP ? `<span class="nm">${NAMEOF(w)}<span class="emotion">${EMOTIONS[d.emotion || 'neutral']}</span></span>` : w === '#' ? '<span class="nm" style="color:var(--host)">——</span>' : ''}<p class="tx">${esc(shown).replace(/§/g, '')}</p></div></div>${d.n >= d.t.length && !U.cinema ? '<span class="more">▼</span>' : ''}`;
+    bx.innerHTML = `<div class="dlg ${cls}${isP && !pb ? ' nopor' : ''}" data-adv="1">${pb ? '<canvas class="por" width="32" height="32"></canvas>' : ''}<div>${isP ? `<span class="nm">${NAMEOF(w)}</span>` : w === '#' ? '<span class="nm" style="color:var(--host)">——</span>' : ''}<p class="tx">${esc(shown).replace(/§/g, '')}</p></div></div>${d.n >= d.t.length && !U.cinema ? '<span class="more">▼</span>' : ''}`;
     if (pb) { const pc = bx.querySelector('.por').getContext('2d'); pc.imageSmoothingEnabled = false; pc.drawImage(bust(pb, d.emotion), 4, 3, 32, 32, 0, 0, 32, 32); }
     return;
   }
@@ -2449,6 +2458,7 @@ function draw(now) {
   for (const [lx, ly, r, c] of LS2.L) { const gx = lx - cx, gy = ly - cy, gr = lg.createRadialGradient(gx, gy, 0, gx, gy, r); gr.addColorStop(0, `rgba(${c},.75)`); gr.addColorStop(1, 'rgba(0,0,0,0)'); lg.fillStyle = gr; lg.fillRect(gx - r, gy - r, r * 2, r * 2); }
   ctx.globalCompositeOperation = 'multiply'; ctx.drawImage(light, 0, 0); ctx.globalCompositeOperation = 'source-over';
   if (U.fade > 0) { ctx.fillStyle = `rgba(0,0,0,${U.fade})`; ctx.fillRect(0, 0, 192, 144); }
+  if (!home && U.sceneDark > 0) { ctx.fillStyle = `rgba(0,0,0,${U.sceneDark})`; ctx.fillRect(0, 0, 192, 144); }
   // 打字
   if (U.dlg && U.dlg.n < U.dlg.t.length) { U.dlg.n = RM ? U.dlg.t.length : Math.min(U.dlg.t.length, U.dlg.n + 1); if (now - (draw.lt || 0) > 60 || U.dlg.n >= U.dlg.t.length) { draw.lt = now; paintBox(); } }
 }
@@ -2504,7 +2514,9 @@ function enterCard() {
   const n = S.card; S.card = null;
   if (n === 1) { S.ch = 1; S.place = 'room'; setMap('room', 5, 6, 1); act('阿公的東西還堆在房間裡。你站在門口，不知道要從哪裡開始。'); act('走過去，看看房間裡的東西。'); }
   if (n === 2) { S.ch = 2; S.log = []; U.cur = 0; S.place = 'map'; S.time = 21 * 60; S.dl = S.time + 50; setMap('hall', 5, 7, 1); act('長輩說分頭整理。大家散進屋子的各個角落。'); act('文彬留在桌邊。你可以去阿公的房間，也可以到屋外找人說話。準備好了，就回來找文彬。'); }
-  if (n === 3) { S.ch = 3; S.log = []; U.cur = 0; S.sel = null; setMap('hall', 7, 6, 1); U.playerSeated = true; goPlace('hall3'); }
+  if (n === 3) { S.ch = 3; S.log = []; U.cur = 0; S.sel = null; setMap('hall', 7, 6, 1); U.playerSeated = true;
+    S.log.push({ w: '!', steps: [Stage.fade(1, 0, 1400), Stage.wait(300), spose('jianhe', 'glasses'), spose('wenbin', 'glasses'), spose('shichang', 'bow', 'serious'), spose('yuzhen', 'pause', 'thinking'), spose('mingde', 'lean', 'thinking')] });
+    goPlace('hall3'); }
   flow();
 }
 const KEYD = { ArrowDown: 0, ArrowUp: 1, ArrowRight: 2, ArrowLeft: 3, s: 0, w: 1, d: 2, a: 3 };
