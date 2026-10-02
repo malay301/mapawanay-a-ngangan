@@ -1338,7 +1338,7 @@ function op(who, n) { S.open[who] = (S.open[who] || 0) + n; }
 function ask(prompt, opts) { S.pending = { prompt, opts: opts.map(o => o[0]) }; PENDING = opts.map(o => o[1]); }
 let PENDING = [];
 // ---- 時間 ----
-function tick(m) { S.time = (S.time || 0) + m; }
+function tick(m) { S.time = (S.time || 0) + m; if (S.dl && S.time > S.dl) S.time = S.dl; } // 時間到上限就停住，不再往上加
 const hm = t => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
 function goPlace(p) { S.place = p; S.sel = null; S.qsel = null; const P = placeDef(p); if (P && P.title && S.ch === 2) divider(P.title); if (P && P.enter && !S.done['enter_' + p]) { S.done['enter_' + p] = 1; P.enter(S); } }
 function endChapter(n) { S.card = n; S.pending = null; }
@@ -1348,7 +1348,7 @@ function runTopic(ch, who, id) { const t = T1[who].find(x => x.id === id); if (t
 // ---- 2-6 回堂屋 ----
 const HALL2 = { title: '堂屋', mood: '大家陸續回到桌邊。', people: ['mingde', 'yuzhen', 'shichang', 'jianhe', 'wenbin'],
   enter: s => {
-    s.dl = (s.time || 21 * 60) + 80; s.pat = 3;
+    s.dl = (s.time || 21 * 60) + 80; s.pat = PAT_MAX;
     act('文彬去門口喊了一聲，大家陸續回到桌邊。世昌先把桌旁的紙箱挪開，建和搬進一張椅子。');
     if (s.flags.tin) act('玉珍把鐵罐帶進來，放在靠牆的小桌上。');
     else act('玉珍從廚房帶來一只鐵罐，放在靠牆的小桌上。');
@@ -2020,7 +2020,23 @@ function npcHint(w) {
 function entAt(x, y) { const L = ents().filter(e => e.tiles.some(t => t[0] === x && t[1] === y)); return L.find(e => e.npc) || L.find(e => e.act) || L[0]; }
 function openBeats() { return BEATS.filter(b => !S.q[b.id] && b.open(S)); }
 function needDone() { return BEATS.filter(b => b.need).every(b => S.q[b.id]); }
-const PAT = () => '●'.repeat(Math.max(0, S.pat)) + '○'.repeat(3 - Math.max(0, S.pat));
+const PAT_MAX = 5; // 明德叔公的耐心（顆數）
+const PAT = () => '♥'.repeat(Math.max(0, Math.min(PAT_MAX, S.pat))) + '♡'.repeat(PAT_MAX - Math.max(0, Math.min(PAT_MAX, S.pat)));
+// 強制往下：耐心用完、或回堂屋的時間到了，還沒釐清的說法由別人接過去，劇情照常往下走
+const FORCED = {
+  qp: { by: ['shichang', '叔公，阿公有留一封信。我們先看信吧。'], k: 'item', id: 'letter' },
+  qs: { by: ['shichang', '叔公，不是一樣都沒留下。'], k: 'who', id: 'shichang' },
+  qf: { by: ['wenbin', '叔公，我先從那個年代的情況問起，好嗎？'], k: 'who', id: 'wenbin' },
+  ql: { by: ['yuzhen', '那缸米的事，我來說。'], k: 'item', id: 'qu' },
+  qr: { by: ['shichang', '叔公，我其實問過很多次。'], k: 'who', id: 'shichang' },
+  qd: { by: ['wenbin', '時間不早了，兩張紙我先對給大家看。'], k: 'item', id: 'tengben' }
+};
+function forceBeat(b) {
+  const f = FORCED[b.id];
+  if (f.by[1] && b.id !== 'qs' && b.id !== 'qr') say(f.by[0], f.by[1]);
+  b.run(S, f.k, f.id);
+  if (b.id === 'qd') { S.puz.pairs.order = 1; puzConv('', '', true); }
+}
 function topicsFor(who) { return (T1[who] || []).filter(t => !S.done['t_' + who + '_' + t.id] && (!t.when || t.when(S))); }
 function objectsFor(Pl) { return (Pl.objects || []).filter(o => (!o.when || o.when(S)) && !(o.once && S.done['o_' + S.place + '_' + o.id])); }
 function solidAt(m, x, y) { return SOLID[m].includes(tileAt(m, x, y)); }
@@ -2169,7 +2185,7 @@ function hall2Menu(w) {
   const hb = open.find(b => b.who !== w && b.hint && b.hint[w]);
   if (hb) o.push({ label: '問問他的看法（約 10 分鐘）', fn: () => { tick(10); S.sel = w; say('you', `${n}，你怎麼看？`); say(w, hb.hint[w]); } });
   // 〔新增〕陪明德坐一下，可以恢復一點耐心（只能一次）
-  if (w === 'mingde' && !S.done.h2wait) o.push({ label: '什麼都不說，陪他坐一下（約 10 分鐘）', fn: () => { S.done.h2wait = 1; tick(10); act('你把明德叔公面前冷掉的茶倒掉，重新倒了一杯，在他旁邊坐下。'); act('明德喝了一口，稍微放鬆了一點。'); if (!S.flags.mdHurt) S.pat = Math.min(3, S.pat + 1); } });
+  if (w === 'mingde' && !S.done.h2wait) o.push({ label: '什麼都不說，陪他坐一下（約 10 分鐘）', fn: () => { S.done.h2wait = 1; tick(10); act('你把明德叔公面前冷掉的茶倒掉，重新倒了一杯，在他旁邊坐下。'); act('明德喝了一口，稍微放鬆了一點。'); S.pat = Math.min(PAT_MAX, S.pat + 1); } });
   if (o.length === 0) return act(IDLE1[w] || '');
   o.push({ label: '離開', fn: () => {} });
   setMenu('h2' + w, w === 'mingde' ? `明德｜耐心 ${PAT()}` : n, o);
@@ -2189,10 +2205,15 @@ function judge(b, k, id) {
   if (k === 'who') { say('you', `${PEOPLE[id].name}，你怎麼看？`); say(id, (b.miss && b.miss[id]) || '這個……我不清楚。'); return; }
   act(k === 'item' ? `你把${ITEMS[id].name}放到${PEOPLE[b.who].name}面前。` : `你提起筆記上的一條：「${FACTS[id][2]}」`, k === 'item' ? [Stage.prop('you', id, 'place', [SEATS[b.who][0] * TS + 8, SEATS[b.who][1] < 4 ? 70 : 84])] : undefined);
   const L = WRONG[b.who] || WRONG.mingde; S.wrongN = (S.wrongN || 0) + 1; say(b.who, L[S.wrongN % L.length]);
-  if (b.who === 'mingde' && !S.flags.mdHurt) {
+  if (b.who === 'mingde') {
     S.pat--;
-    if (S.pat <= 0) { S.flags.mdHurt = 1; act('明德叔公把椅子往後推了一點。'); say('mingde', '不要一直拿東西往我面前放。'); hostline('明德叔公的耐心用完了。'); }
-    else act(`（明德的耐心 ${PAT()}）`);
+    if (S.pat <= 0) {
+      // 耐心用完：這段強制往下，由別人把話接過去；耐心回滿，之後的段落照常由玩家回應
+      S.flags.mdHurt = 1; S.flags.mdHurtN = (S.flags.mdHurtN || 0) + 1;
+      act('明德叔公把椅子往後推了一點。'); say('mingde', '不要一直拿東西往我面前放。'); hostline('明德叔公的耐心用完了。');
+      S.pat = PAT_MAX; forceBeat(b);
+    }
+    else act(`（明德叔公的耐心 ${PAT()}）`);
   }
 }
 function tableAct() {
@@ -2234,7 +2255,9 @@ function flow() {
     if (!S.card && !S.pending && !U.menu && S.dl && S.time >= S.dl) {
       if (S.ch === 1 && S.place === 'hall1' && S.flags.round) { HALL1.timeout(S); return flow(); }
       if (S.ch === 2 && S.place !== 'hall2' && S.items.includes('letter') && !S.flags.called) { S.flags.called = 1; act('遠處傳來文彬的聲音：「時間差不多了，大家先回堂屋吧！」'); setMap('hall', 5, 7, 1); S.done.v_hall2 = 1; goPlace('hall2'); return flow(); }
-      if (S.place === 'hall2' && !S.flags.late && !S.flags.end2) { S.flags.late = 1; if (!S.q.ql) hostline('已經很晚了。米缸的事，看來今晚來不及問了。'); return flow(); }
+      if (S.place === 'hall2' && !S.flags.late && !S.flags.end2) { S.flags.late = 1; hostline(needDone() ? '已經很晚了。米缸的事，看來今晚來不及問了。' : '時間不早了。還沒說完的事，大家決定一口氣講完。'); return flow(); }
+      if (S.place === 'hall2' && S.flags.late && !S.flags.end2 && S.mode === 'puzzle') { S.puz.pairs.order = 1; puzConv('', '', true); return flow(); }
+      if (S.place === 'hall2' && S.flags.late && !S.flags.end2 && S.mode !== 'puzzle') { const b = BEATS.find(b => b.need && !S.q[b.id] && b.open(S)) || BEATS.find(b => b.need && !S.q[b.id]); if (b) forceBeat(b); else end2(); return flow(); }
     }
     if (S.pending) { const pd = S.pending; setMenu('pend' + pd.opts.join('|'), pd.prompt || '', pd.opts.map((t, i) => ({ label: t, fn: () => { const f = PENDING[i]; S.pending = null; PENDING = []; f && f(S); } }))); }
     else if (!U.menu) autoPrompt();
