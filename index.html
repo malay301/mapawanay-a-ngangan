@@ -706,7 +706,7 @@ const ZY = {
   jh_thanks: ['Kukay.', '謝謝。', '院子互動'],
   jh_rec: ['caay ka laliw ku ngangan.', '名字不會不見。', '建和阿嬤錄音結尾']
 };
-function zy(k) { const z = ZY[k]; return z[0] ? `§${z[0]}（${z[1]}）` : `§（${z[1]}）`; }
+function zy(k) { const z = ZY[k]; if (!z) return '§……'; return z[0] ? `§${z[0]}（${z[1]}）` : `§（${z[1]}）`; }
 
 const PEOPLE = {
   mingde: { name: '明德', role: '叔公，70' },
@@ -2168,7 +2168,7 @@ function homeHTML() {
   ${window.PWA && PWA.canInstall() ? '<div class="ph"><button class="pbtn" data-install="1">安裝成 App</button><span class="small">裝好後會出現在主畫面，離線也能玩。</span></div>' : ''}${window.PWA && PWA.iosHint() ? '<p class="small">iPhone／iPad：用 Safari 開啟，點下方「分享」，選「加入主畫面」，就能像 App 一樣全螢幕玩。</p>' : ''}
   <div class="ph"><button class="pbtn" data-bgm="1" aria-pressed="${BGM.on}">背景音樂：${BGM.on ? '開' : '關'}</button></div>
   <p class="small">點地板走路，點人或東西互動。頭上有「⋯」的，還有話可以說、東西可以看。問法不一樣，別人的反應也不一樣。你知道的事會記在「選單」裡的筆記本。</p>
-  <div class="wan">故事會碰到家人遺物被焚燒、名字被改寫、因政治案件的問話而害怕，以及家人多年不提的沉默。無暴力或恐怖畫面，劇中不演出任何祭儀。約四十分鐘，可以隨時暫停；有背景音樂，可在右上角關掉。</div></div>`;
+  <div class="warn">故事會碰到家人遺物被焚燒、名字被改寫、因政治案件的問話而害怕，以及家人多年不提的沉默。無暴力或恐怖畫面，劇中不演出任何祭儀。約四十分鐘，可以隨時暫停；有背景音樂，可在右上角關掉。</div></div>`;
 }
 function notebookCols() {
   const g = { saw: [], rem: [], told: [] };
