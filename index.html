@@ -2138,7 +2138,7 @@ function paintBox() {
     const d = U.dlg, w = d.w, isP = ISSPK(w), pb = isP ? BUSTOF(w) : null;
     const cls = w === 'you' ? 'you' : w === '#' ? 'host nar' : isP ? '' : 'nar';
     const shown = d.t.slice(0, d.n);
-    bx.innerHTML = `<div class="dlg ${cls}${isP && !pb ? ' nopor' : ''}" data-adv="1">${pb ? '<canvas class="por" width="32" height="32"></canvas>' : ''}<div>${isP ? `<span class="nm">${NAMEOF(w)}</span>` : w === '#' ? '<span class="nm" style="color:var(--host)">——</span>' : ''}<p class="tx">${esc(shown).replace(/§/g, '<span class="zy"></span>')}</p></div></div>${d.n >= d.t.length ? '<span class="more">▼</span>' : ''}`;
+    bx.innerHTML = `<div class="dlg ${cls}${isP && !pb ? ' nopor' : ''}" data-adv="1">${pb ? '<canvas class="por" width="32" height="32"></canvas>' : ''}<div>${isP ? `<span class="nm">${NAMEOF(w)}</span>` : w === '#' ? '<span class="nm" style="color:var(--host)">——</span>' : ''}<p class="tx">${esc(shown).replace(/§/g, '')}</p></div></div>${d.n >= d.t.length ? '<span class="more">▼</span>' : ''}`;
     if (pb) { const pc = bx.querySelector('.por').getContext('2d'); pc.imageSmoothingEnabled = false; pc.drawImage(bust(pb), 4, 3, 32, 32, 0, 0, 32, 32); }
     return;
   }
