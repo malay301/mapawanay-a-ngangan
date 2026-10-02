@@ -66,7 +66,6 @@ button, input { font: inherit; color: inherit; }
 .cover h2 { margin: 0; font-weight: 400; font-size: clamp(28px, 9vw, 40px); letter-spacing: .2em; }
 .cover p { margin: 0; color: var(--muted); max-width: 22em; font-size: 14px; }
 .silence { background: rgba(4,4,8,.86); }
-@media (prefers-reduced-motion: no-preference) { .cover:not(.introc) .n { animation: cin 1.2s ease-out both; } .cover:not(.introc) h2 { animation: cin 1.6s .3s ease-out both; } .cover:not(.introc) p { animation: cin 1.6s .9s ease-out both; } @keyframes cin { from { opacity: 0; transform: translateY(6px); letter-spacing: .5em; } } }
 .silence h2 { font-size: 26px; }
 .bar { width: min(14rem, 80%); height: 6px; border: 2px solid var(--boxEdge); background: #000; }
 .bar i { display: block; height: 100%; width: 0; background: var(--straw); }
@@ -1763,7 +1762,7 @@ function wrapUp() {
   else say('mingde', '你阿公買的糯米先留著齁。他以前說想再釀酒，我明天去問問看。');
   act('他把米缸的蓋子重新放正，發現一邊卡住，先把它放在旁邊。');
   fact('md_tomorrow');
-  S.log.push({ w: '!', steps: [Stage.fade(0, 1, 700), Stage.room('out', [10, 8, 0]), Stage.fade(1, 0, 900), swalk('you', [8, 9], 3), spose('you', 'pause', 'gentle'), Stage.wait(900), Stage.fade(0, 1, 1500)] });
+  S.log.push({ w: '!', steps: [Stage.fade(0, 1, 600), Stage.room('out', [10, 8, 0]), Stage.fade(1, 0, 700), swalk('you', [8, 9], 3), spose('you', 'pause', 'gentle'), Stage.wait(700), Stage.fade(0, 1, 1000)] });
   finish();
 }
 function finish() { S.beat = 'end'; S.ch = 4; S.card = null; }
@@ -2515,7 +2514,7 @@ function enterCard() {
   if (n === 1) { S.ch = 1; S.place = 'room'; setMap('room', 5, 6, 1); act('阿公的東西還堆在房間裡。你站在門口，不知道要從哪裡開始。'); act('走過去，看看房間裡的東西。'); }
   if (n === 2) { S.ch = 2; S.log = []; U.cur = 0; S.place = 'map'; S.time = 21 * 60; S.dl = S.time + 50; setMap('hall', 5, 7, 1); act('長輩說分頭整理。大家散進屋子的各個角落。'); act('文彬留在桌邊。你可以去阿公的房間，也可以到屋外找人說話。準備好了，就回來找文彬。'); }
   if (n === 3) { S.ch = 3; S.log = []; U.cur = 0; S.sel = null; setMap('hall', 7, 6, 1); U.playerSeated = true;
-    S.log.push({ w: '!', steps: [Stage.fade(1, 0, 1400), Stage.wait(300), spose('jianhe', 'glasses'), spose('wenbin', 'glasses'), spose('shichang', 'bow', 'serious'), spose('yuzhen', 'pause', 'thinking'), spose('mingde', 'lean', 'thinking')] });
+    S.log.push({ w: '!', steps: [Stage.fade(1, 0, 900)] });
     goPlace('hall3'); }
   flow();
 }
