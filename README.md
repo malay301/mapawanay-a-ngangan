@@ -1,6 +1,6 @@
-# 被遺忘的名字 Mapawanay a ngangan｜像素版
+# 被遺忘的名字 Mapawanay a ngangan
 
-撒奇萊雅族家族記憶的像素風文字推理遊戲。整理阿公遺物時，找到一個沒人提起的名字。
+整理阿公遺物時，找到一個沒人提起的名字。
 
 - 線上遊玩：https://malay301.github.io/mapawanay-a-ngangan/
 - 手機：Android 用 Chrome 打開後按「安裝成 App」；iPhone 用 Safari「分享 → 加入主畫面」。打開過一次即可離線遊玩。
