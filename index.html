@@ -2217,8 +2217,14 @@ function flow() {
     if (e.w === '~') { U.silent = !!e.t; BGM.update(); continue; }
     if (e.w === '@') { U.dlg = { w: '@', t: '', n: 0, who: e.t }; U.cg = null; U.menu = null; return render(); }
     if (e.w === '!') { U.dlg = { w: '!', t: '', n: 0, emotion: 'neutral' }; U.cg = null; U.menu = null; startScene(e.steps); if (!U.cinema) continue; return render(); }
+    const steps = e.steps || (e.w === null ? NARRATIVE_CUES.get(e.t) : null);
+    // 有動畫的旁白只播動畫、不出現文字；動畫沒能播放時（例如角色不在場）才退回顯示文字
+    if (e.w === null && silentNarration(e.t, steps)) {
+      U.dlg = { w: '!', t: '', n: 0, emotion: 'neutral' }; U.menu = null; startScene(steps);
+      if (U.cinema) return render();
+    }
     U.dlg = { w: e.w, t: e.t, n: 0, emotion: e.emotion || LINE_EMOTIONS.get(e.t) || 'neutral' }; U.menu = null;
-    startScene(e.steps || (e.w === null ? NARRATIVE_CUES.get(e.t) : null));
+    startScene(steps);
     return render();
   }
   U.dlg = null; U.cg = null;
