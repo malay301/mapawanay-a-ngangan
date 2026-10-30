@@ -56,8 +56,8 @@ function directLines(emotion, lines) { for (const line of lines) LINE_EMOTIONS.s
 directLines('happy', [
   '奕翔齁？我世昌啦，電話裡那個啦！本人有比較帥吧？',
   '那天我打給你，你還接起來問我是不是詐騙集團。我說對啊，我專門騙人回家的啦！',
-  '沒辦法，記性好，是我們家的遺傳。', '奕翔，你長好高。',
-  '我是建和，在國小教族語。也姓陳，不過不是你們家的，這一帶姓陳的太多了，丟一顆石頭就會打到三個。',
+  '沒辦法，記性好是我們家的遺傳。', '奕翔，你長好高。',
+  '我是建和，在國小教族語。也姓陳，不過不是你們家的，這一帶姓陳的太多了，丟一顆石頭都會打到三個。',
   '還不錯啦，比我教的學生差一點點。', '看什麼，你阿公自己也有。', '那你要接啊。', '有聽到就會接啦。'
 ]);
 directLines('angry', [
@@ -69,25 +69,24 @@ directLines('angry', [
 directLines('sad', [
   '……不記得了。', '可是現在要找，也找不回來了。', '有，可是也來不及，我也不知道怎麼開口。',
   '他一直記著。', '……是啊，她哭著叫我不要亂動阿嬤的東西，可我那時候不肯聽。',
-  '我想著，他沒提，我也不要提。拖到後來，更不知道怎麼開口了。',
+  '我想著他沒提，我也不要提。拖到後來更不知道怎麼開口了。',
   '她過世以後，我有時候會拿出來聽。尤其是前面她唱自己名字的那段。',
-  '我那時候沒追問。現在想起來，有點後悔。', '沒有。我一直想說過幾天再去。',
-  '後面我真的想不起來。', '……他十年前才過世，你們明明在這期間碰過那麼多次面。',
+  '我那時候沒追問，現在想起來有點後悔。', '沒有。我一直想說過幾天再去。',
+  '……他十年前才過世，你們明明在這期間碰過那麼多次面。',
   '我那時候說……燒了吧。燒了，就沒有人再笑我們了。', '對。我那時候把這些事都怪到她身上。'
 ]);
 directLines('surprised', [
-  '……扳開了，啊——割到手指了。', '她是巫師？', '所以是你提的？', '沒了？',
-  '……這是麴。我阿嬤以前拿來的，原來伯公還留著喔。', '等一下……好像有講名字。', '等等……前面的，好像是名字。'
+  '……扳開了，啊！割到手指了。', '她是巫師？', '所以是你提的？', '沒了？',
+  '……這是麴。我阿嬤以前拿來的，原來伯公還留著喔。'
 ]);
 directLines('worried', [
-  '我試一下……', '我也不確定。我怕一直跟著想，最後只是覺得很像。',
-  '……我聽不太懂族語。', '她有說過名字的，但我現在想不起來怎麼念。',
+  '我試一下……', '……我怕一直跟著想，最後只是覺得很像。',
+  '……我聽不太懂族語。', 
   '我沒有一封封看，也沒弄清楚。我那時候覺得，只要有人名、地址，都可能被拿來問。'
 ]);
 directLines('gentle', [
-  '沒關係啦，我教的那些小朋友也聽不懂，他們甚至還要考試呢。',
-  '先休息一下，不用現在想完。', '好，先想她那次在說什麼，不用急著把名字湊完整。',
-  '那今天先留這一段。', '妳想到多少，再跟我們說就好。',
+  '沒關係啦，我教的那些小朋友也聽不太懂啊，他們甚至還要考試呢。',
+  '那今天先留這一段。', '妳想到多少再跟我們說就好。',
   '她說，名字不會不見。名字會等，等到有人願意再叫它的那一天。',
   '叔公，下次你想到什麼，可以打給我。', '如果我沒接到，我下班會回的。',
   '先打電話，臭小子。你每次都挑我去種田的時候來家裡。'
@@ -128,7 +127,7 @@ directScene('明德叔公轉身往屋裡走，你沒有立刻跟上。明德叔�
 directScene('玉珍蹲在櫃子前，把幾個疊在一起的碗移出來。你替她扶住櫃門，隨後看見最裡面還放著一只舊鐵罐。', spose('yuzhen', 'bow'), sprop('yuzhen', 'bowl', 'take'), spose('you', 'reach'));
 directScene('玉珍回頭看了一眼，伸手拿起鐵罐。她沿著邊緣慢慢扳開蓋子，裡面墊著一塊褪色的布，放著幾塊乾燥的米色小圓塊。', sprop('yuzhen', 'qu', 'take'), sprop('yuzhen', 'qu', 'open'));
 directScene('她把鐵罐放到桌上，撥開卡在蓋子裡的布角。', sprop('yuzhen', 'qu', 'place', [39, 87]), sprop('yuzhen', 'qu', 'open'));
-directScene('她蓋好鐵罐，留在桌上，沒有放進待丟的紙箱。', sprop('yuzhen', 'qu', 'fold'), sprop('yuzhen', 'qu', 'place', [39, 87]));
+directScene('她蓋好鐵罐，把鐵罐放在桌上。', sprop('yuzhen', 'qu', 'fold'), sprop('yuzhen', 'qu', 'place', [39, 87]));
 directScene('建和睜開眼睛，像是被抓到偷懶的學生。', spose('jianhe', 'nod', 'surprised'));
 directScene('建和摘下一邊耳機，把手機螢幕轉過來。畫面停在一段沒有正式標題的錄音上，檔名只有日期。', spose('jianhe', 'glasses'), sprop('jianhe', 'phone', 'turn'));
 directScene('他把錄音往前拉了一小段，將另一邊耳機遞過來。', sprop('jianhe', 'phone', 'turn'), spose('jianhe', 'reach', 'gentle'));
@@ -156,10 +155,6 @@ for (const line of ['明德從口袋拿出一個小紙包，放到桌角。裡�
 directScene('玉珍走到靠牆的小桌旁，掀開鐵罐蓋子。', swalk('yuzhen', [9, 2], 1), sprop('yuzhen', 'qu', 'open'));
 directScene('她把鐵罐拿到桌邊，打開讓大家看。', sprop('yuzhen', 'qu', 'take', [152, 25]), swalk('yuzhen', [9, 4], 3), sprop('yuzhen', 'qu', 'place', [136, 80]), sprop('yuzhen', 'qu', 'open'));
 directScene('玉珍把鐵罐放回靠牆的小桌，建和拿來一張乾淨的紙，整理剛才提過、還需要再問的事情。', swalk('yuzhen', [9, 2], 1), sprop('yuzhen', 'qu', 'place', [152, 25]), swalk('yuzhen', [6, 3], 0), spose('yuzhen', 'sit'), sprop('jianhe', 'paper', 'place', [62, 85]), sprop('jianhe', 'paper', 'write'));
-directScene('你起身添水。', spose('you', 'stand'), sprop('you', 'cup', 'take'), swalk('you', [9, 4], 3), sprop('you', 'cup', 'place', [105, 69]));
-directScene('玉珍接過杯子，看到旁邊的鐵罐，手停在半空。', sprop('yuzhen', 'cup', 'take', [105, 69]), spose('yuzhen', 'pause', 'surprised'));
-directScene('明德原本放在膝上的手抬起來。', spose('mingde', 'reach', 'surprised'));
-directScene('明德試了幾次，最後搖頭。', spose('mingde', 'shake', 'sad'));
 directScene('你拿出手機放在桌上。', sprop('you', 'phone', 'take'), sprop('you', 'phone', 'place', [118, 83]));
 directScene('世昌笑了。', spose('shichang', 'nod', 'happy'));
 directScene('快十二點了。玉珍把杯子收進茶盤，建和蹲下去拔充電線。', sprop('yuzhen', 'cup', 'take'), spose('jianhe', 'bow'));
@@ -171,7 +166,7 @@ directScene('世昌起身去車上，帶回包著照片的布包。',
   spose('shichang', 'stand'), swalk('shichang', [9, 7]), swalk('shichang', [6, 7], 0),
   Stage.away('out', 'shichang', [10, 8, 2]), swalk('shichang', [16, 9], 2), sprop('shichang', 'photo', 'take', [278, 151]), swalk('shichang', [10, 8], 1),
   Stage.back('shichang', [6, 7, 2]), swalk('shichang', [9, 7]), swalk('shichang', [9, 2]), swalk('shichang', [8, 3], 0), spose('shichang', 'sit'));
-directScene('你端起茶盤走進廚房。玉珍將乾布遞給你，讓你把洗好的杯子一個個擦乾，放回櫃子。',
+directScene('你端起茶盤走進廚房。玉珍將乾布遞給你，讓你把洗好的杯子一個個擦乾放回櫃子。',
   spose('you', 'stand'), sprop('you', 'cup', 'take'), swalk('you', [2, 2], 1), Stage.room('room', [5, 7, 1]),
   Stage.cast('yuzhen', [9, 4, 0]), swalk('you', [9, 6], 1), sprop('yuzhen', 'hanky', 'take'), spose('yuzhen', 'reach', 'gentle'), sprop('you', 'cup', 'fold'), sprop('you', 'cup', 'place', [167, 86]));
 directScene('你將裝著信的袋子放回阿公的房間，今晚先住在老屋。',
@@ -415,7 +410,7 @@ directScene("往下滑，主管私訊：「奕翔節哀。你的喪假到幾號�
 directScene("你又想起前陣子，同事一臉揶揄地問你：「所以你是原住民啊？哪一族啊？有沒有族名？」", spose('you', 'pause', 'worried'));
 
 // —— 第一章｜阿公房間・衣櫃 ——
-LINE_EMOTIONS.set("……扳開了，啊——割到手指了。", 'pain');
+LINE_EMOTIONS.set("……扳開了，啊！割到手指了。", 'pain');
 
 // —— 第一章｜阿公房間・手帕 ——
 directScene("這是阿公的手帕，被阿公洗到發白，但四個角摺得整齊。", spose('you', 'bow', 'gentle'));
@@ -448,7 +443,7 @@ LINE_EMOTIONS.set("嗯。吃飽沒？", 'serious');
 LINE_EMOTIONS.set("吃了。", 'awkward');
 LINE_EMOTIONS.set("騙人，你們這些小孩每次都說吃了，結果轉過頭回去就吃沒營養的泡麵。", 'smirk');
 directScene("他看見你手臂下夾著的紙，眼神停了一下，很快又移開。", spose('mingde', 'pause', 'surprised'), spose('mingde', 'bow', 'serious'));
-directScene("他說得很小聲，但是是說族語。", spose('mingde', 'bow', 'angry'));
+directScene("他說得很小聲，像是在說族語？", spose('mingde', 'bow', 'angry'));
 directScene("你聽不懂，只聽出那個語氣跟你小時候亂翻阿公抽屜時，阿公罵你的語氣一樣。", spose('you', 'pause', 'awkward'));
 
 // —— 第一章｜和玉珍 ——
@@ -457,24 +452,24 @@ LINE_EMOTIONS.set("奕翔，你長好高。", 'happy');
 LINE_EMOTIONS.set("玉珍姊，上次見是……", 'thinking');
 LINE_EMOTIONS.set("我記得是你國中吧。過年我們在這間屋子過年，你一直躲在廁所打電動，打到大家要拍大合照才肯出來。", 'smirk');
 LINE_EMOTIONS.set("……這個妳也記得。", 'awkward');
-LINE_EMOTIONS.set("沒辦法，記性好，是我們家的遺傳。", 'smirk');
+LINE_EMOTIONS.set("沒辦法，記性好是我們家的遺傳。", 'smirk');
 
 // —— 第一章｜和世昌 ——
 LINE_EMOTIONS.set("找我幹嘛？去啊，先去打招呼。我又不會跑掉。", 'smirk');
 
 // —— 第一章｜和建和 ——
 directScene("靠門的位子坐著一個年輕男人，脖子上掛著耳機，手機螢幕朝下蓋在桌上。", spose('jianhe', 'glasses', 'neutral'));
-LINE_EMOTIONS.set("我是建和，在國小教族語。也姓陳，不過不是你們家的，這一帶姓陳的太多了，丟一顆石頭就會打到三個。", 'happy');
-LINE_EMOTIONS.set("我是被玉珍找來的，說是可能會用到族語，請我幫忙翻譯。", 'gentle');
+LINE_EMOTIONS.set("我是建和，在國小教族語。也姓陳，不過不是你們家的，這一帶姓陳的太多了，丟一顆石頭都會打到三個。", 'happy');
+LINE_EMOTIONS.set("我是被玉珍找來的，說是可能會請我幫忙翻譯族語。", 'gentle');
 LINE_EMOTIONS.set("……我聽不太懂族語。", 'worried');
-LINE_EMOTIONS.set("沒關係啦，我教的那些小朋友也聽不懂，他們甚至還要考試呢。", 'gentle');
+LINE_EMOTIONS.set("沒關係啦，我教的那些小朋友也聽不太懂啊，他們甚至還要考試呢。", 'gentle');
 
 // —— 第一章｜和文彬 ——
-directScene("桌尾坐著一個戴眼鏡的中年男人，資料夾放在腿上，坐得比所有人都直。", spose('wenbin', 'glasses', 'serious'));
-LINE_EMOTIONS.set("你好，我姓李，李文彬。在大學裡做撒奇萊雅族文化的研究。", 'gentle');
+directScene("桌尾坐著一個戴眼鏡的中年男人，資料夾放在腿上。", spose('wenbin', 'glasses', 'serious'));
+LINE_EMOTIONS.set("你好，我姓李，李文彬。在做文化研究。", 'gentle');
 LINE_EMOTIONS.set("我是世昌請我來的。", 'neutral');
 LINE_EMOTIONS.set("那你研究二十年，那你應該比我還懂我們家的文化了吧。", 'smirk');
-LINE_EMOTIONS.set("才不會。你做研究做越久，只會覺得自己懂得少。我們拿國科會、中研院的錢做研究，但生產最多的東西叫做「尚待查證」。", 'awkward');
+LINE_EMOTIONS.set("才不會。你做研究做越久，只會覺得自己懂得少。", 'awkward');
 
 // —— 第一章｜自我介紹一輪 ——
 LINE_EMOTIONS.set("好了，既然人都打過招呼了。那一個人講一句，今晚為什麼來。不想講的，說「我先聽」也可以。", 'happy');
@@ -498,7 +493,7 @@ LINE_EMOTIONS.set("……那是以前日治時期的戶籍資料啦，寫法跟�
 
 // —— 第一章｜問：為什麼 ——
 LINE_EMOTIONS.set("那為什麼從來沒有人提過她？", 'serious');
-LINE_EMOTIONS.set("囡仔人問遮多衝啥？（Gín-á-lâng bīn tsiah tsuē tshòng-siánn?）", 'angry');
+LINE_EMOTIONS.set("囡仔人問遮多衝啥？", 'angry');
 LINE_EMOTIONS.set("就是因為不懂。所以才問啊。", 'serious');
 directScene("明德叔公沒有回答，不過他多看了你一眼。", spose('mingde', 'pause', 'thinking'));
 LINE_EMOTIONS.set("是我不懂，還是你們這些長輩從來沒跟我說？", 'angry');
@@ -521,22 +516,22 @@ LINE_EMOTIONS.set("你阿公就是這樣，先把東西備好，後面的事慢�
 
 // —— 第一章｜問：名字 ——
 LINE_EMOTIONS.set("那她叫什麼？", 'thinking');
-LINE_EMOTIONS.set("阿嬤教我的，是族語名字，不是這個漢名。紙上是不是同一個人，還要再對。", 'serious');
+LINE_EMOTIONS.set("阿嬤教我的是族名，不是這個漢名。紙上是不是同一個人可能還要再對。", 'serious');
 LINE_EMOTIONS.set("等一下……我有點忘記怎麼念了。", 'worried');
 LINE_EMOTIONS.set("一點都不記得了嗎？", 'surprised');
-LINE_EMOTIONS.set("呃……現在突然要我想起怎麼念就卡住了。", 'awkward');
-LINE_EMOTIONS.set("好，我等妳想起來。想起多少，再跟我說就好。", 'gentle');
+LINE_EMOTIONS.set("呃……我阿嬤都過世多久了，現在突然要我想起怎麼念就卡住了。", 'awkward');
+LINE_EMOTIONS.set("好，我等妳想起來。想起多少再跟我說就好。", 'gentle');
 LINE_EMOTIONS.set("我再想想看，我記得阿嬤以前不只講過一次……說不定等我想起她那時候在講什麼，就會記得了。", 'thinking');
-LINE_EMOTIONS.set("妳試著念看看？記得多少就說多少。", 'gentle');
+LINE_EMOTIONS.set("妳記得多少就說多少。", 'gentle');
 LINE_EMOTIONS.set("我試一下……", 'worried');
 LINE_EMOTIONS.set("一個音也想不起來嗎？", 'worried');
 LINE_EMOTIONS.set("你們先別一起問啦，我越想越亂欸。", 'angry');
-LINE_EMOTIONS.set("……讓我從阿嬤那時候跟我說的話，慢慢想。", 'thinking');
+LINE_EMOTIONS.set("……讓我先想想阿嬤那時候跟我說的話。", 'thinking');
 
 // —— 第一章｜問：為什麼找建和 ——
 LINE_EMOTIONS.set("妳為什麼找建和來？", 'neutral');
-LINE_EMOTIONS.set("我之前準備考族語中高級，有去旁聽他的課。這次是想找回阿嬤教過我的名字，可是有些音怎麼樣都想不起來，就問他能不能來幫我聽聽看。", 'thinking');
-LINE_EMOTIONS.set("她之前有跟我提過，不過電話裡也說不太清楚。想說當面聊，可能比較容易。", 'gentle');
+LINE_EMOTIONS.set("我之前準備考族語中高級，有去旁聽他的課。這次是想可能會有需要，就問他能不能來幫我。", 'thinking');
+LINE_EMOTIONS.set("她之前有跟我提過，不過她在電話裡也說不太清楚到底要我幫些什麼。想說當面聊，可能比較容易。", 'gentle');
 LINE_EMOTIONS.set("我只怕最後讓你白跑一趟。", 'worried');
 LINE_EMOTIONS.set("沒關係啦。", 'gentle');
 
@@ -544,7 +539,7 @@ LINE_EMOTIONS.set("沒關係啦。", 'gentle');
 LINE_EMOTIONS.set("你為什麼約大家？", 'neutral');
 LINE_EMOTIONS.set("我在查我們家的事啊，都查了快十多年了。戶政事務所、舊相簿、還能講話的長輩，全都一個一個找，一個一個問。", 'serious');
 LINE_EMOTIONS.set("現在戶政事務所的小姐齁，看到我都會先皺眉嘆氣，然後問我今天又要查什麼。", 'smirk');
-LINE_EMOTIONS.set("照片裡是我阿公的阿嬤，這個我早就知道。可是阿公講的族語名字，我沒記完整，跟戶籍上的漢名也對不起來。這幾年就是卡在這裡。", 'worried');
+LINE_EMOTIONS.set("照片裡是我阿公的阿嬤，這個我早就知道。可是阿公講的族名，我記不完整，跟戶籍上的名字也對不起來。", 'worried');
 
 // —— 第一章｜問：燒東西 ——
 LINE_EMOTIONS.set("你說你也帶了東西？", 'surprised');
@@ -552,31 +547,31 @@ LINE_EMOTIONS.set("是啊，我阿公說，五十年前家裡燒過他阿嬤的�
 LINE_EMOTIONS.set("我有一張照片，是他從屋後的火堆裡撿回來的。照片在我車上，我等一下去拿給你看。", 'serious');
 
 // —— 第一章｜問：名字 ——
-LINE_EMOTIONS.set("你懂族語，那個名字……你有辦法幫她想起來嗎？", 'thinking');
-LINE_EMOTIONS.set("我沒聽過她阿嬤當時怎麼念，不能直接告訴她答案。不過她想到一些音的話，我可以幫忙一起聽。", 'serious');
-LINE_EMOTIONS.set("如果她想起幾個音，我可以幫忙聽，或者問問部落裡的其他老人家，看有沒有人聽過。", 'gentle');
+LINE_EMOTIONS.set("你懂族語的話，那個名字……你有辦法幫她想起來嗎？", 'thinking');
+LINE_EMOTIONS.set("如果她能想起幾個音，我可以幫忙一起想。", 'serious');
+LINE_EMOTIONS.set("如果她能想起幾個音，我可以幫忙一起想，或者拿去問部落裡的其他老人家，看有沒有人聽過。", 'gentle');
 LINE_EMOTIONS.set("所以現在還沒辦法知道？", 'worried');
-LINE_EMOTIONS.set("對啊，還不能確定。有些名字念起來很像，總是要再核對一下。", 'serious');
+LINE_EMOTIONS.set("對啊，還不能確定。有些名字太久沒用，所以我們不知道是正常，有些則是念起來很像，所以要再核對。", 'serious');
 
 // —— 第一章｜問：為什麼 ——
 LINE_EMOTIONS.set("你平常在哪裡教族語？", 'neutral');
-LINE_EMOTIONS.set("國小啊，不過最近比較多時間待在部落。我教族語教了三年了啦，那些小朋友齁，今天學，明天就還我，比信用卡還款還準時呢。", 'awkward');
+LINE_EMOTIONS.set("市區的國小啊，不過最近比較多時間待在部落。我教族語教了三年了啦，那些小朋友齁，今天學、明天就還我，比信用卡還款還準時呢。", 'awkward');
 
 // —— 第一章｜文彬的資料 ——
 LINE_EMOTIONS.set("你帶了什麼資料？", 'thinking');
-directScene("文彬打開資料夾，從幾份影本裡抽出一頁，轉向你。", sprop('wenbin', 'archive', 'open'), sprop('wenbin', 'archive', 'turn'));
+directScene("文彬打開資料夾，從幾份影本裡抽出一頁轉向你。", sprop('wenbin', 'archive', 'open'), sprop('wenbin', 'archive', 'turn'));
 LINE_EMOTIONS.set("我以前蒐集的一些舊戶籍資料。世昌來找我的時候，我回去翻了一下，然後找到這一頁。你看這裡，原來寫的名字被劃掉了，旁邊另外又補了字。", 'serious');
-LINE_EMOTIONS.set("底下原本寫什麼，還看得出來嗎？", 'thinking');
+LINE_EMOTIONS.set("底下原本寫什麼還看得出來嗎？", 'thinking');
 LINE_EMOTIONS.set("有幾筆是還看得到啦，但字不完整。", 'serious');
 LINE_EMOTIONS.set("可是至少能確定，她的名字是被改過的吧？", 'surprised');
-LINE_EMOTIONS.set("這一欄確實改過。不過，我們還得先確認這兩份資料寫的是不是同一個人。至於為什麼改，這頁也沒有註明。", 'serious');
+LINE_EMOTIONS.set("這一欄確實改過。不過我們還得先確認這兩份資料寫的是不是同一個人。至於為什麼改，這頁也沒有註明。", 'serious');
 LINE_EMOTIONS.set("我還以為你這邊查到呢。", 'awkward');
 LINE_EMOTIONS.set("怎麼可能。不過是有找到一些，只是還沒全部對上。你之前說親屬記載不一樣，是哪一欄？我們等等一起看。", 'smirk');
 
 // —— 第一章｜玉珍的推理題 ——
-LINE_EMOTIONS.set("我剛剛看過了。胡……應該就是阿嬤說的那位。", 'thinking');
+LINE_EMOTIONS.set("我剛剛看過了。胡……我阿嬤好像有提過。", 'thinking');
 LINE_EMOTIONS.set("玉珍姊，妳看這一格。", 'neutral');
-LINE_EMOTIONS.set("胡……這個名字，我阿嬤好像有提過。", 'thinking');
+LINE_EMOTIONS.set("胡……這個名字，應該就是阿嬤說的那位。", 'thinking');
 LINE_EMOTIONS.set("你先看這欄寫的是「母」，你覺得這是誰的媽媽啊？", 'smirk');
 LINE_EMOTIONS.set("我記得她好像是明仁伯公、明德叔公他們那一輩的阿嬤。所以……應該是我們三個的高祖母？", 'thinking');
 LINE_EMOTIONS.set("所以是戶長的媽媽。戶長是你阿公的爸爸那一輩。", 'gentle');
@@ -586,7 +581,7 @@ LINE_EMOTIONS.set("也是。戶長是你阿公的爸爸那一輩，所以她再�
 // —— 第一章｜和明德 ——
 LINE_EMOTIONS.set("叔公，你看這一格。", 'neutral');
 LINE_EMOTIONS.set("不要拿給我看啦，我又沒興趣，收起來。", 'angry');
-LINE_EMOTIONS.set("這缸先留著。你阿公有提過要用，等一下再講。", 'serious');
+LINE_EMOTIONS.set("這缸先留著。", 'serious');
 
 // —— 第一章｜和玉珍 ——
 LINE_EMOTIONS.set("……我不知道。你阿公沒跟我說過。", 'worried');
@@ -613,11 +608,11 @@ directScene("你看到鎖定畫面一閃——是一張陌生老人家的照片�
 // —— 第二章｜屋後・明德 ——
 LINE_EMOTIONS.set("叔公？", 'worried');
 LINE_EMOTIONS.set("……這裡，以前是燒東西的地方。", 'sad');
-LINE_EMOTIONS.set("垃圾啊…落葉…還有不要的東西，全都拿來這裡燒。後來不燒了，大家就集資鋪了水泥。", 'serious');
+LINE_EMOTIONS.set("垃圾啊…落葉…還有不要的東西，全都拿來這裡燒。後來不燒了，我們就集資鋪了水泥。", 'serious');
 LINE_EMOTIONS.set("……但鋪了以後還是看得出來痕跡。", 'sad');
 LINE_EMOTIONS.set("……她每天天還沒亮的時候，就從這條小路去提水。", 'gentle');
-LINE_EMOTIONS.set("我們這些小孩啊，都還在睡，就聽到水桶碰到門框的聲音。叩、叩。每天都一樣。", 'gentle');
-LINE_EMOTIONS.set("有時候想裝睡、不想起來幫忙，她就自己把水提進去。", 'sad');
+LINE_EMOTIONS.set("我們這些小孩啊，都還在睡，就會聽到水桶碰到門框的聲音。叩、叩……每天都一樣。", 'gentle');
+LINE_EMOTIONS.set("有時候想裝睡、不想起來幫忙，她就會自己把水提進去。", 'sad');
 LINE_EMOTIONS.set("那晚到底怎麼了？", 'serious');
 LINE_EMOTIONS.set("……進去再說。", 'worried');
 
@@ -631,7 +626,7 @@ LINE_EMOTIONS.set("那妳有跟她學嗎？", 'neutral');
 LINE_EMOTIONS.set("是有幫過忙，可是都是等她叫我做什麼，我才做什麼。現在要我自己從頭做一次，我也不會。", 'awkward');
 LINE_EMOTIONS.set("阿公準備那些糯米，會不會也是想再做一次？", 'thinking');
 LINE_EMOTIONS.set("有可能。不過這個麴放太久了，應該是不能拿來用了。", 'thinking');
-LINE_EMOTIONS.set("等一下問問叔公吧。他以前也在，應該記得。", 'gentle');
+LINE_EMOTIONS.set("等一下問問叔公吧。他以前也在，應該也記得。", 'gentle');
 
 // —— 第二章｜院子・建和的錄音 ——
 LINE_EMOTIONS.set("你在聽什麼？", 'neutral');
@@ -653,18 +648,17 @@ directScene("你跟著念。", spose('you', 'nod', 'awkward'));
 LINE_EMOTIONS.set("還不錯啦，比我教的學生差一點點。", 'smirk');
 
 // —— 第二章｜院子・阿公的族語 ——
-LINE_EMOTIONS.set("阿公兩年前也跟我說過一句族語。但我那時候不懂也沒問。", 'sad');
-LINE_EMOTIONS.set("你記得任何一個音嗎？開頭、結尾都行。", 'serious');
+LINE_EMOTIONS.set("阿公兩年前也跟我說過一句族語。但我那時候不知道意思、也沒問。", 'sad');
+LINE_EMOTIONS.set("你記得發音嗎？", 'serious');
 LINE_EMOTIONS.set("……不記得了。", 'sad');
 LINE_EMOTIONS.set("……", 'sad');
 
 // —— 第二章｜廊下・照片 ——
 LINE_EMOTIONS.set("我阿公有說，照片是他阿嬤。我拿去問別的老人，有人也認得，還會講她以前幫過誰。", 'serious');
-LINE_EMOTIONS.set("可是問完整名字，有人忘了，有人念的我又不敢確定。戶籍上的字，跟他們講的也對不起來。", 'worried');
-LINE_EMOTIONS.set("叔公以前看到這張，就叫我先收著。我不是沒問過。", 'sad');
+LINE_EMOTIONS.set("叔公以前看到這張，就叫我收起來，也從不讓我問。", 'sad');
 LINE_EMOTIONS.set("你想要他說什麼？", 'thinking');
 LINE_EMOTIONS.set("我想知道他記得的，跟我阿公講的是不是一樣。", 'serious');
-LINE_EMOTIONS.set("還有，為什麼連照片都要燒？上面只有她。", 'sad');
+LINE_EMOTIONS.set("還有，為什麼連照片都要燒？", 'sad');
 LINE_EMOTIONS.set("我不知道。", 'worried');
 LINE_EMOTIONS.set("我也不知道。但今天人都在，我還是想問清楚。", 'serious');
 
@@ -673,7 +667,7 @@ LINE_EMOTIONS.set("除了那晚的事，你阿公還說過她什麼？", 'thinki
 LINE_EMOTIONS.set("他說她嗓門很大。以前一群小孩跑出去玩，到了吃飯時間，她站在門口喊，隔幾間房子都聽得到。", 'happy');
 LINE_EMOTIONS.set("……你阿公也在裡面？", 'smirk');
 LINE_EMOTIONS.set("對啊，而且他每次都拖到最後，回來還想直接伸手拿東西吃。她就會打他的手，叫他先去洗。", 'happy');
-LINE_EMOTIONS.set("阿公講這段的時候，還會學她的口氣。用族語講，講完自己一直笑。", 'happy');
+LINE_EMOTIONS.set("阿公講這段的時候，還會學她的口氣，講完自己一直笑。", 'happy');
 LINE_EMOTIONS.set("你還記得他怎麼說嗎？", 'thinking');
 LINE_EMOTIONS.set("不太記得了。那時候只覺得阿公又在講以前的事，沒仔細聽。", 'awkward');
 LINE_EMOTIONS.set("後來我開始查這些，我一直問他照片哪裡來、那晚發生什麼事。這種吃飯、洗手的小事，反而沒再問過。", 'sad');
@@ -681,17 +675,17 @@ LINE_EMOTIONS.set("後來我開始查這些，我一直問他照片哪裡來、�
 // —— 第二章｜廊下・那晚之前 ——
 LINE_EMOTIONS.set("那晚之前，家裡有發生過什麼事嗎？你阿公有說嗎？", 'serious');
 LINE_EMOTIONS.set("他提過一次，說那陣子有人來家裡問過話。那些人問了什麼，他沒講清楚，只說後來大家講話都很小心。", 'serious');
-LINE_EMOTIONS.set("我那時候沒追問。現在想起來，有點後悔。", 'sad');
+LINE_EMOTIONS.set("我那時候沒追問，現在想起來有點後悔。", 'sad');
 
 // —— 第一章｜和建和 ——
 LINE_EMOTIONS.set("還想聽剛才那段嗎？", 'gentle');
 
 // —— 第一章｜和世昌 ——
-LINE_EMOTIONS.set("走吧，把找到的東西放一起。有些地方，我還想問叔公。", 'serious');
+LINE_EMOTIONS.set("走吧，把找到的東西放一起。有些地方我還想問叔公。", 'serious');
 
 // —— 回堂屋｜回應說法 ——
 LINE_EMOTIONS.set("叔公，你剛才自己說，東西是你拿出去的。", 'serious');
-LINE_EMOTIONS.set("阿公的信，寫的不是這樣。", 'serious');
+LINE_EMOTIONS.set("阿公的信寫的不是這樣。", 'serious');
 LINE_EMOTIONS.set("叔公，不是一樣都沒留下。", 'serious');
 LINE_EMOTIONS.set("世昌哥說，他阿公提過那陣子有人來家裡問過話。", 'serious');
 LINE_EMOTIONS.set("可是，廚房裡還有一罐麴。", 'thinking');
@@ -699,13 +693,13 @@ LINE_EMOTIONS.set("我沒問？叔公，我拿這張照片問過你，你叫我�
 LINE_EMOTIONS.set("我的謄本上也有出生日期跟出生別，可以對對看。", 'thinking');
 
 // —— 回堂屋｜大家回到桌邊 ——
-LINE_EMOTIONS.set("整理櫃子找到的，像是阿嬤以前送來的麴。先放這裡，等一下再看。", 'gentle');
+LINE_EMOTIONS.set("整理櫃子找到的，像是阿嬤以前送來的麴。先放這裡等一下再看。", 'gentle');
 LINE_EMOTIONS.set("在哪裡找到的？", 'serious');
 LINE_EMOTIONS.set("阿公的鐵盒裡，它包在手帕裡。", 'neutral');
 LINE_EMOTIONS.set("叔公，你剛才說東西是你拿出去的。阿公也寫到那晚，所以我想把事情問清楚。", 'serious');
 LINE_EMOTIONS.set("阿公寫了五十年前燒東西的事。他說他也在。", 'serious');
-LINE_EMOTIONS.set("好，那就從這裡開始吧。我們一件一件來，今天大家一起對。", 'serious');
-LINE_EMOTIONS.set("要講什麼就講。不過我先說，那時候燒東西，是家裡一起決定的。", 'angry');
+LINE_EMOTIONS.set("好，那就從這裡開始吧。", 'serious');
+LINE_EMOTIONS.set("要講什麼就講。不過我先說，那時候燒東西是家裡一起決定的。", 'angry');
 
 // —— 回堂屋｜讀信 ——
 directScene("「那句話，我到今天，還是沒有辦法把它寫下來……」", spose('you', 'bow', 'sad'));
@@ -740,7 +734,7 @@ LINE_EMOTIONS.set("不會了。", 'sad');
 LINE_EMOTIONS.set("可是現在要找，也找不回來了。", 'sad');
 
 // —— 回堂屋｜怕什麼 ——
-LINE_EMOTIONS.set("你們家當時遇到什麼事，我不能只靠大背景去推。明德叔公，你們那時候碰到了什麼？", 'serious');
+LINE_EMOTIONS.set("明德叔公，你們那時候碰到了什麼？", 'serious');
 LINE_EMOTIONS.set("……阿嬤以前是部落的巫師。有人要請她幫忙時，就會來家裡找她。", 'serious');
 LINE_EMOTIONS.set("她是巫師？", 'surprised');
 LINE_EMOTIONS.set("這個我阿嬤有講過。", 'gentle');
@@ -753,10 +747,9 @@ LINE_EMOTIONS.set("問那個人住哪裡、跟誰說過話，有沒有寄信來�
 LINE_EMOTIONS.set("那個人做了什麼？", 'worried');
 LINE_EMOTIONS.set("我不知道，他們沒跟我講。我只記得人走了以後，你阿公叫我們出去不要亂說，有人問就回來告訴他。", 'worried');
 LINE_EMOTIONS.set("所以你才想把信燒掉？", 'serious');
-LINE_EMOTIONS.set("……嗯。問話在前面。後來阿嬤不在了，我們整理東西，又翻出那些信，我就想到以前來問的人。", 'sad');
+LINE_EMOTIONS.set("……嗯。後來阿嬤不在了，我們整理東西又翻出那些信，我就想到以前來問的人。", 'sad');
 LINE_EMOTIONS.set("那些信真的是借宿的人寫的？", 'thinking');
 LINE_EMOTIONS.set("我沒有一封封看，也沒弄清楚。我那時候覺得，只要有人名、地址，都可能被拿來問。", 'worried');
-LINE_EMOTIONS.set("可是連照片和她用過的東西都燒，就不只是怕了。我也不想再被人拿她的事來笑。", 'sad');
 LINE_EMOTIONS.set("叔公記得的先寫下，其他的我們再慢慢查。", 'gentle');
 LINE_EMOTIONS.set("你帶的資料找得到嗎？", 'thinking');
 LINE_EMOTIONS.set("之後要另外找，現在也不能答應一定查得到。", 'serious');
@@ -779,8 +772,8 @@ LINE_EMOTIONS.set("我看見他把照片拿起來，那時候……我沒再去�
 LINE_EMOTIONS.set("你們後來也沒講到這張照片？", 'serious');
 LINE_EMOTIONS.set("沒有。", 'sad');
 LINE_EMOTIONS.set("……他十年前才過世，你們明明在這期間碰過那麼多次面。", 'sad');
-LINE_EMOTIONS.set("我想著，他沒提，我也不要提。拖到後來，更不知道怎麼開口了。", 'sad');
-LINE_EMOTIONS.set("他也沒跟我說過後來有沒有找你談。我不知道他怎麼想的。", 'sad');
+LINE_EMOTIONS.set("我想著他沒提，我也不要提。拖到後來更不知道怎麼開口了。", 'sad');
+LINE_EMOTIONS.set("他也沒跟我說過後來有沒有找你談，但這張照片他一直留著。", 'sad');
 LINE_EMOTIONS.set("但這張照片他一直留著。", 'sad');
 LINE_EMOTIONS.set("火快熄的時候，我撿了這個。", 'sad');
 LINE_EMOTIONS.set("原本放在家裡。知道今天要整理，我出門前才把它找出來。", 'sad');
@@ -791,21 +784,18 @@ LINE_EMOTIONS.set("先讓我想一下。", 'thinking');
 
 // —— 回堂屋｜留下的東西 ——
 LINE_EMOTIONS.set("火快熄的時候我撿的。原本是什麼，我已經認不出來了。", 'sad');
-LINE_EMOTIONS.set("這張是我阿公留的。他過世以後，家裡整理東西，就交給我保管。", 'gentle');
-LINE_EMOTIONS.set("這個是後來做的，不是那場火留下來的。我阿嬤常拿來，跟伯公一起釀酒。", 'gentle');
-LINE_EMOTIONS.set("所以燒了東西以後，他們還是有一起做？", 'surprised');
-LINE_EMOTIONS.set("有啊，後來做得少了，但阿嬤還是會送麴過去。", 'gentle');
+LINE_EMOTIONS.set("這張是我阿公留的。他過世以後，家裡整理的東西，就交給我保管。", 'gentle');
+LINE_EMOTIONS.set("這個是我阿嬤常拿來跟伯公一起釀酒的。", 'gentle');
 LINE_EMOTIONS.set("剛才拿進來的這罐麴，是阿嬤以前送來的。", 'gentle');
 LINE_EMOTIONS.set("他們以前還會一起釀酒。", 'gentle');
 LINE_EMOTIONS.set("那米缸裡的新糯米，是阿公想再釀酒？", 'thinking');
-LINE_EMOTIONS.set("他有說想再做一次。叫我去問現在還有誰家在做麴。", 'sad');
-LINE_EMOTIONS.set("你剛才問的就是這個。我那時候不想往下講，才叫你先收東西。", 'awkward');
+LINE_EMOTIONS.set("他有說想再做一次，叫我去問現在還有誰家在做麴。", 'sad');
 LINE_EMOTIONS.set("你有去嗎？", 'thinking');
 LINE_EMOTIONS.set("沒有。我一直想說過幾天再去。", 'sad');
-LINE_EMOTIONS.set("不過這罐放太久了，不能直接拿來用。要做的話，還是得重新問。", 'worried');
+LINE_EMOTIONS.set("不過這罐放太久了，不能直接拿來用。要的話，還是得重新做麴。", 'worried');
 
 // —— 回堂屋｜為什麼沒說 ——
-LINE_EMOTIONS.set("……你們明明都記得她，那為什麼從沒告訴我們你們阿嬤的事情？", 'sad');
+LINE_EMOTIONS.set("……那為什麼從沒告訴我們你們阿嬤的事情？", 'sad');
 LINE_EMOTIONS.set("我阿嬤有講，只是每次講一點。做東西的時候提到，以前去哪裡的時候，想起了回憶時也會提到。", 'gentle');
 LINE_EMOTIONS.set("那晚的事，她只說燒完以後，她氣得不想再跟大家說話，回房間哭了很久。", 'sad');
 LINE_EMOTIONS.set("說什麼都沒有了，以後小孩問起要拿什麼給他們看？", 'sad');
@@ -817,9 +807,6 @@ LINE_EMOTIONS.set("後來是……不知道怎麼講。只要講到她的事，�
 LINE_EMOTIONS.set("所以我們問的時候，你們就只肯講那麼一點？", 'angry');
 LINE_EMOTIONS.set("那時候也想，如果你們沒問就算了。", 'awkward');
 LINE_EMOTIONS.set("可是我們不知道的事情，怎麼會知道要問？", 'angry');
-LINE_EMOTIONS.set("那今天總該先講點我們不知道的吧。", 'serious');
-LINE_EMOTIONS.set("名字也是。我以前常聽我阿嬤說的，可是那時候以為，忘了再問阿嬤就好。", 'sad');
-LINE_EMOTIONS.set("她有說過名字的，但我現在想不起來怎麼念。", 'worried');
 
 // —— 回堂屋｜兩張紙 ——
 directScene("文彬把影本重新攤開，移到你的謄本旁邊。", sprop('wenbin', 'archive', 'open'), sprop('wenbin', 'archive', 'place', [99, 84]));
@@ -853,33 +840,23 @@ LINE_EMOTIONS.set("叔公，你以前有聽過別人叫她的名字嗎？", 'gen
 LINE_EMOTIONS.set("……都多久了，我都已經忘了差不多了。我們以前都叫她阿嬤。來找她的人，有些是會叫她的名字。", 'thinking');
 LINE_EMOTIONS.set("你還記得嗎？", 'thinking');
 LINE_EMOTIONS.set("我也一直想不完整。阿嬤以前叫我幫忙做麴，會一邊做、一邊講小時候的事，我想從那時候的話找找看。", 'thinking');
-LINE_EMOTIONS.set("好，先想她那次在說什麼，不用急著把名字湊完整。", 'gentle');
-LINE_EMOTIONS.set("妳說過，做麴的時候會講以前的事？", 'thinking');
+LINE_EMOTIONS.set("妳說，做麴的時候會講以前的事？", 'thinking');
 directScene("玉珍看向靠牆的鐵罐。", spose('yuzhen', 'pause', 'thinking'));
 LINE_EMOTIONS.set("有一次我幫她切葉子時沒做好，她叫我重切。她說她以前也這樣被她阿嬤念。", 'thinking');
-LINE_EMOTIONS.set("等一下……好像有講名字。", 'surprised');
-LINE_EMOTIONS.set("先休息一下，不用現在想完。", 'gentle');
-LINE_EMOTIONS.set("我剛剛想到一件事。以前跟阿嬤做這個時，她說她小時候也被念過。", 'thinking');
 LINE_EMOTIONS.set("那次她有講到名字。我想想前面那句話……", 'thinking');
 
 // —— 第三章｜想起名字 ——
-LINE_EMOTIONS.set("等等……前面的，好像是名字。", 'surprised');
-LINE_EMOTIONS.set("後面我真的想不起來。", 'sad');
 directScene("玉珍看向建和。", spose('yuzhen', 'pause', 'worried'));
-LINE_EMOTIONS.set("我也不確定。我怕一直跟著想，最後只是覺得很像。", 'worried');
+LINE_EMOTIONS.set("……我怕一直跟著想，最後只是覺得很像。", 'worried');
 LINE_EMOTIONS.set("那今天先留這一段。", 'gentle');
 LINE_EMOTIONS.set("可以錄嗎？把妳剛才記得的，還有哪裡不確定都一起留著。", 'gentle');
-LINE_EMOTIONS.set("可以，可是前後也要留，不要剪成只有那幾個音。", 'serious');
-LINE_EMOTIONS.set("今天想起來的是，阿嬤以前教我做麴的時候，說她小時候也被她阿嬤念過。那次她有講到名字。我現在記得前面一部分，後面還不確定。", 'serious');
-LINE_EMOTIONS.set("先給建和幫忙聽。要再拿給別人聽前，先跟我說一下，我想知道是找誰問。", 'serious');
+LINE_EMOTIONS.set("可以是可以，可是前後也要留，不要剪成只有那幾個音。", 'serious');
 LINE_EMOTIONS.set("好。", 'gentle');
-LINE_EMOTIONS.set("這樣對嗎？", 'thinking');
-LINE_EMOTIONS.set("對，這張我可以帶回去嗎？我回去找看看阿嬤的日記，說不定還能找到別的。", 'gentle');
-LINE_EMOTIONS.set("她的東西有幾箱放在舅舅家，我只記得看過那本，還不知道搬家以後收在哪裡。", 'worried');
-LINE_EMOTIONS.set("我先拍一張，這張妳拿。", 'gentle');
+LINE_EMOTIONS.set("我回去找看看阿嬤的日記，說不定還能找到別的。", 'gentle');
+LINE_EMOTIONS.set("她的東西有幾箱放在舅舅家，我記得看過那本，但不知道搬家以後收在哪裡。", 'worried');
 
 // —— 第三章｜世昌 ——
-LINE_EMOTIONS.set("我以前一直想把這個空格填起來。族語名字、紙上的漢名，還有中間幾代的資料，全部對在一起。", 'serious');
+LINE_EMOTIONS.set("我以前一直想把這個空格填起來。族名、紙上的漢名，還有中間幾代的資料，全部對在一起。", 'serious');
 LINE_EMOTIONS.set("現在呢？", 'thinking');
 LINE_EMOTIONS.set("現在還是想知道啊。只是今天才發現，我阿公以前講的那些小事，我也沒記多少。", 'awkward');
 LINE_EMOTIONS.set("我一直問誰燒的、為什麼燒。反而他在講吃飯、洗手那些回憶時，我一直以為他在已讀亂回，想把話拉回來。", 'sad');
@@ -894,7 +871,7 @@ LINE_EMOTIONS.set("那先把今晚知道的寫上去。", 'gentle');
 
 // —— 第三章｜建和 ——
 directScene("建和把筆記轉向玉珍。", sprop('jianhe', 'notebook', 'turn'));
-LINE_EMOTIONS.set("妳之後想到別的，可以先傳給我。我再問問我認識的長輩，看他願不願意幫忙。", 'gentle');
+LINE_EMOTIONS.set("妳之後想到別的可以先傳給我。我再問問我認識的長輩，看他願不願意幫忙。", 'gentle');
 LINE_EMOTIONS.set("他會知道嗎？", 'thinking');
 LINE_EMOTIONS.set("不一定，不過可能知道這個名字，也可能認識你們家，但都得問了才知道。", 'serious');
 LINE_EMOTIONS.set("你阿嬤唱那首歌的時候，一開始就有講自己的名字。", 'gentle');
@@ -907,14 +884,14 @@ LINE_EMOTIONS.set("戶籍的部分，我可以再找完整的親屬資料，也�
 LINE_EMOTIONS.set("我回去找阿嬤的日記。她有幾箱東西放在舅舅家，那本是不是還在，要先問他。名字我也再想看看，但不要明天早上就跑來問我想起來沒有。", 'smirk');
 directScene("世昌笑了一下。", spose('shichang', 'nod', 'happy'));
 LINE_EMOTIONS.set("好啦。", 'awkward');
-LINE_EMOTIONS.set("我先把手上的整理好。大家有找到什麼，再互相說。", 'gentle');
+LINE_EMOTIONS.set("我先把手上的整理好。大家有找到什麼再互相說。", 'gentle');
 LINE_EMOTIONS.set("好。我找到日記後再拍給你們看。", 'gentle');
 LINE_EMOTIONS.set("我會繼續查，有新的我再傳給你們。", 'serious');
 directScene("你們互相確認電話，沒有再往下約日期。", sprop('you', 'phone', 'take'), spose('yuzhen', 'nod', 'gentle'), spose('shichang', 'nod', 'gentle'));
 LINE_EMOTIONS.set("我今天知道的有點多。先不要幫我排下一次，我想帶回去看一看。", 'worried');
 LINE_EMOTIONS.set("好。有想到要問什麼再傳給我。", 'gentle');
-LINE_EMOTIONS.set("你把這兩份收好。之後有需要什麼，你再來問我。", 'gentle');
-LINE_EMOTIONS.set("你今天睡這裡，還是要回去？", 'gentle');
+LINE_EMOTIONS.set("你把這兩份收好。之後有需要什麼你再來問我。", 'gentle');
+LINE_EMOTIONS.set("你今天睡這裡還是要回去？", 'gentle');
 LINE_EMOTIONS.set("太晚了，我今晚先住這裡。", 'gentle');
 LINE_EMOTIONS.set("世昌哥，你方便幫忙聯絡嗎？我回去再把今天整理的傳給你。", 'gentle');
 LINE_EMOTIONS.set("可以啊，可是你也要回訊息餒，不要跟叔公一樣，電話都不接。", 'smirk');
@@ -930,11 +907,11 @@ LINE_EMOTIONS.set("白天可以打？啊你不是要上班？", 'surprised');
 LINE_EMOTIONS.set("如果我沒接到，我下班會回的。", 'gentle');
 LINE_EMOTIONS.set("照片下次可以再給我看嗎？你阿公講過的其他事，我也想聽。", 'gentle');
 LINE_EMOTIONS.set("可以啊，你如果有想到你阿公講過什麼也跟我說。", 'happy');
-LINE_EMOTIONS.set("妳想到多少，再跟我們說就好。", 'gentle');
+LINE_EMOTIONS.set("妳想到多少再跟我們說就好。", 'gentle');
 LINE_EMOTIONS.set("你也是。你阿公以前有說過什麼，你也再想想看。", 'gentle');
 
 // —— 結局前｜收尾 ——
-LINE_EMOTIONS.set("糯米先不要丟，我明天去問，現在還有誰會做麴。", 'gentle');
+LINE_EMOTIONS.set("糯米先不要丟，我明天去問還有誰會做麴。", 'gentle');
 LINE_EMOTIONS.set("你阿公買的糯米先留著齁。他以前說想再釀酒，我明天去問問看。", 'gentle');
 
 // —— 其他 ——
@@ -963,25 +940,23 @@ const KEEP_TEXT = new Set([
   "你把鐵盒放到地上，用面紙壓住割到的地方。",
   "他坐回去，翻開一本筆記本。筆記本很厚，貼滿了便利貼，邊邊都捲起來了。",
   "明德叔公端著茶杯的手停了一下。他沒有看你，只把杯子放回桌上，杯底磕出一聲響。",
-  "玉珍抬頭看他，眉頭蹙得更緊。世昌原本向前傾著，見她低下頭，又慢慢坐回去。",
+  "玉珍抬頭看他，眉頭蹙得更緊。世昌原本向前傾著，見她低下頭又慢慢坐回去。",
   "明德叔公轉身往屋裡走，你沒有立刻跟上。明德叔公走了兩步，接著停在門邊，背對著你，隨後又走了進去。",
   "玉珍蹲在櫃子前，把幾個疊在一起的碗移出來。你替她扶住櫃門，隨後看見最裡面還放著一只舊鐵罐。",
   "玉珍回頭看了一眼，伸手拿起鐵罐。她沿著邊緣慢慢扳開蓋子，裡面墊著一塊褪色的布，放著幾塊乾燥的米色小圓塊。",
-  "她蓋好鐵罐，留在桌上，沒有放進待丟的紙箱。",
+  "她蓋好鐵罐，把鐵罐放在桌上。",
   "他把照片放回布上，這次沒有立刻包起來。",
   "明德最後進來，褲管沾著草籽，看見信便停在椅子旁。",
   "世昌把照片平放在桌上，燒焦的那一部分，朝著明德。",
   "明德從口袋拿出一個小紙包，放到桌角。裡面是一片焦黑、邊緣捲曲的厚紙，已經看不出完整圖像。",
   "明德從口袋拿出小紙包，把焦黑的厚紙攤在桌上。",
   "玉珍把鐵罐放回靠牆的小桌，建和拿來一張乾淨的紙，整理剛才提過、還需要再問的事情。",
-  "玉珍接過杯子，看到旁邊的鐵罐，手停在半空。",
-  "你在紙上寫下「做麴時做不好」「阿嬤說自己小時候也被念」「談到她阿嬤的名字」，把紙轉向玉珍。",
   "你把日期和要做的事寫下來，拍給大家。",
   "快十二點了。玉珍把杯子收進茶盤，建和蹲下去拔充電線。",
   "你把電話寫在便條上，放到他面前。",
   "明德喝了一口，稍微放鬆了一點。",
   "你將裝著信的袋子放回阿公的房間，今晚先住在老屋。",
-  "他把米缸的蓋子重新放正，發現一邊卡住，先把它放在旁邊。",
+  "他把米缸的蓋子重新放正。",
   "你坐在世昌旁邊。他的筆記本上寫滿了名字和箭頭，箭頭最後指向一個空白的圓圈。",
   "你在建和旁邊坐下。他把手機翻過去，螢幕朝下。",
   "你跟玉珍說等一下再來幫忙。她點點頭，又把一疊碗搬出來。",
