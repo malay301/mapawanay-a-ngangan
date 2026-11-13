@@ -7,6 +7,7 @@ const FEEDBACK = (() => {
   const NAME_A = ['提水的', '守著米缸的', '坐在廊下的', '聽歌的', '翻謄本的', '記筆記的', '等麴的', '夜裡醒著的', '找名字的', '看照片的', '收好信的', '扶著米缸的', '數星星的', '慢慢問的', '把話記下的', '走過院子的'];
   const NAME_B = ['旅人', '聽者', '記錄者', '來訪者', '問路人', '守夜人', '拾字人', '提燈人', '傳話人', '鄰居'];
   const QS = [
+    { id: 'thoughts', type: 'letter', label: '我的心得', hint: '玩完之後，你在想什麼？可以寫給奕翔、寫給阿公，或寫給自己。想到什麼就寫什麼，長短都可以。' },
     { id: 'overall', type: 'scale', label: '整體來說，你喜歡這個遊戲嗎？', lo: '不太喜歡', hi: '非常喜歡' },
     { id: 'story', type: 'scale', label: '故事的發展清楚、好懂嗎？', lo: '很難懂', hi: '很清楚' },
     { id: 'moment', type: 'text', label: '哪一段最讓你有感覺？為什麼？' },
@@ -34,16 +35,19 @@ const FEEDBACK = (() => {
     const missed = typeof MISSED !== 'undefined' && typeof S !== 'undefined' && S ? MISSED.filter(m => m[0](S)).length : '';
     return `結局 ${ending}｜未走到的對話 ${missed} 段｜${new Date().toLocaleString('zh-TW', { hour12: false })}`;
   }
+  // 心得是獨立的一頁，不編號；其他題從 1 開始
+  const num = q => { const i = QS.filter(x => x.type !== 'letter').indexOf(q); return i < 0 ? '' : `${i + 1}. `; };
   function asText(cur) {
     const lines = [`《被遺忘的名字》訪客簿`, `名字：${cur.name}（編號 ${cur.code}）`, cur.ctx || context(), ''];
-    QS.forEach((q, i) => lines.push(`${i + 1}. ${q.label}`, `   ${cur.a[q.id] || '（沒有寫）'}`));
+    QS.forEach(q => q.type === 'letter' ? lines.push(`【${q.label}】`, cur.a[q.id] || '（沒有寫）', '') : lines.push(`${num(q)}${q.label}`, `   ${cur.a[q.id] || '（沒有寫）'}`));
     return lines.join('\n');
   }
 
   const LOG = 'bwjm.rpg2.guestbook';
   const book = () => { try { return JSON.parse(localStorage.getItem(LOG)) || []; } catch { return []; } };
   const qHTML = cur => QS.map((x, i) => {
-    const v = cur.a[x.id] || '', n = `${i + 1}. ${h(x.label)}`;
+    const v = cur.a[x.id] || '', n = `${num(x)}${h(x.label)}`;
+    if (x.type === 'letter') return `<label class="fbletter letterdoc"><span class="fbltitle">${h(x.label)}</span><span class="small">${h(x.hint)}</span><textarea name="fb-${x.id}" rows="8" maxlength="3000" placeholder="寫下你的心得……">${h(v)}</textarea></label>`;
     if (x.type === 'scale') return `<fieldset class="fbq"><legend>${n}</legend><div class="fbscale">${[1, 2, 3, 4, 5].map(k => `<label><input type="radio" name="fb-${x.id}" value="${k}"${String(v) === String(k) ? ' checked' : ''}><span>${k}</span></label>`).join('')}</div><div class="fbends"><span>1 ${h(x.lo)}</span><span>5 ${h(x.hi)}</span></div></fieldset>`;
     if (x.type === 'pick') return `<fieldset class="fbq"><legend>${n}</legend><div class="fbscale">${x.opts.map(o => `<label><input type="radio" name="fb-${x.id}" value="${h(o)}"${v === o ? ' checked' : ''}><span>${h(o)}</span></label>`).join('')}</div></fieldset>`;
     return `<label class="fbq"><span>${n}</span><textarea name="fb-${x.id}" rows="3" maxlength="1000">${h(v)}</textarea></label>`;
@@ -55,14 +59,14 @@ const FEEDBACK = (() => {
     if (cur.sent) return `<div class="fb" id="fb">
       <h3>文彬的訪客簿</h3>
       <p class="lastline"><b>文彬</b>收到了，${h(cur.name)}。我會跟今晚的筆記放在一起。</p>
-      <div class="letterdoc fbpage"><p class="small" style="color:#6b5a3a">訪客簿｜${h(cur.name)}　編號 ${h(cur.code)}</p>${QS.map((q, i) => `<p><b>${i + 1}. ${h(q.label)}</b><br>${h(cur.a[q.id] || '（沒有寫）')}</p>`).join('')}</div>
+      <div class="letterdoc fbpage"><p class="small" style="color:#6b5a3a">訪客簿｜${h(cur.name)}　編號 ${h(cur.code)}</p>${QS.map(q => q.type === 'letter' ? `<p><b>${h(q.label)}</b></p><p class="fbthoughts">${h(cur.a[q.id] || '（沒有寫）')}</p>` : `<p><b>${num(q)}${h(q.label)}</b><br>${h(cur.a[q.id] || '（沒有寫）')}</p>`).join('')}</div>
       <p class="small">這一頁存在這台裝置上。帶活動的人可以用下面的按鈕把訪客簿複製或下載下來。</p>
       ${tools}
       <div class="ph"><button class="pbtn" data-fb="again" type="button">翻回去改一改</button></div>
     </div>`;
     return `<div class="fb" id="fb">
       <h3>文彬的訪客簿</h3>
-      <p class="lastline"><b>文彬</b>要走之前，在這本簿子上留幾句話吧。名字不用寫真的，今晚先借你一個。</p>
+      <p class="lastline"><b>文彬</b>要走之前，在這本簿子上留幾句話吧，心得也好。名字不用寫真的，今晚先借你一個。</p>
       <p class="fbname">你借來的名字：<b>${h(cur.name)}</b><span class="small">編號 ${h(cur.code)}</span><button class="pbtn" data-fb="rename" type="button">換一個名字</button></p>
       <p class="small">這個名字只用來把每個人寫的頁面分開。請不要在回答裡留下真實姓名或聯絡方式；每一題都可以跳過。</p>
       ${qHTML(cur)}
