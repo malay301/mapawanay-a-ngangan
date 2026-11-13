@@ -160,6 +160,26 @@ button, input { font: inherit; color: inherit; }
 .end a { color: var(--straw); word-break: break-all; }
 .lastline { border: 3px double var(--boxEdge); background: var(--box); padding: 8px 12px; } .lastline b { display: block; font-weight: 400; color: var(--straw); font-size: 14px; letter-spacing: .1em; }
 .end details summary { cursor: pointer; color: var(--straw); }
+.fb { display: grid; gap: 12px; border-top: 2px dashed var(--boxEdge); padding-top: 14px; }
+.fbname { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.fbname b { color: var(--straw); font-weight: 400; font-size: 20px; letter-spacing: .08em; }
+.fbq { display: grid; gap: 6px; border: 2px solid var(--boxEdge); background: var(--box); padding: 8px 12px; margin: 0; font-size: 15px; }
+.fbq legend { padding: 0 4px; }
+.fbq textarea { font: inherit; font-size: 16px; background: #efe6cc; color: #2c2217; border: 2px solid #8a7a58; padding: 6px 8px; resize: vertical; width: 100%; box-sizing: border-box; }
+.fbscale { display: flex; flex-wrap: wrap; gap: 6px; }
+.fbscale label { position: relative; }
+.fbscale input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.fbscale span { display: inline-block; min-width: 2.4em; text-align: center; border: 2px solid var(--boxEdge); background: #1e1c30; padding: 4px 10px; border-radius: 3px; }
+.fbscale input:checked + span { background: var(--straw); color: #1a1420; border-color: var(--straw); }
+.fbscale input:focus-visible + span { outline: 2px solid var(--straw); outline-offset: 2px; }
+.fbends { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+.fbpage p { margin: 0 0 .7em; font-size: 15px; }
+.fbletter { display: grid; gap: 8px; }
+.fbletter .fbltitle { font-size: 20px; letter-spacing: .12em; color: #6b2a1c; }
+.fbletter .small { color: #6b5a3a; }
+.fbletter textarea { font: inherit; font-size: 16px; line-height: 1.9; background: transparent; color: #2c2217; border: 0; border-bottom: 2px dashed #8a7a58; padding: 4px 2px; resize: vertical; width: 100%; box-sizing: border-box; background-image: repeating-linear-gradient(transparent 0 calc(1.9em - 1px), #c9b98f calc(1.9em - 1px) 1.9em); background-attachment: local; }
+.fbletter textarea:focus { outline: 2px solid #8a7a58; outline-offset: 2px; }
+.fbthoughts { white-space: pre-wrap; }
 .hostp { color: var(--host); border-left: 4px solid var(--host); padding: 6px 12px; background: #1a1d33; }
 </style>
 </head>
@@ -185,6 +205,7 @@ button, input { font: inherit; color: inherit; }
 </div>
 
 <script src="presentation.js"></script>
+<script src="feedback.js"></script>
 <script>
 const X = null;
 // ================= 像素美術：地圖、圖塊、角色 =================
@@ -1317,7 +1338,8 @@ const WRONG = {
 const LS = { get(k, d) { try { const v = localStorage.getItem('bwjm.rpg2.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('bwjm.rpg2.' + k, JSON.stringify(v)); } catch {} } };
 const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const CHN = { 1: '第一章｜聚首', 2: '第二章｜那一夜', 3: '第三章｜名字', 4: '散場' };
-function fresh() { return { started: true, ch: 1, place: 'room', log: [], facts: {}, factOrder: [], items: [], flags: {}, met: {}, open: { mingde: 0, yuzhen: 0 }, closed: {}, done: {}, q: {}, sel: null, qsel: null, pending: null, beat: null, newFacts: 0, card: 1, time: 0, dl: 0, pat: 3 }; }
+function newRun() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function fresh() { return { started: true, runId: newRun(), ch: 1, place: 'room', log: [], facts: {}, factOrder: [], items: [], flags: {}, met: {}, open: { mingde: 0, yuzhen: 0 }, closed: {}, done: {}, q: {}, sel: null, qsel: null, pending: null, beat: null, newFacts: 0, card: 1, time: 0, dl: 0, pat: 3 }; }
 let S = LS.get('game', null);
 let U = { overlay: null, home: !!(S && S.started) };
 function save() { LS.set('game', S); }
@@ -1736,7 +1758,7 @@ function wrapUp() {
   S.log.push({ w: '!', steps: [Stage.fade(0, 1, 600), Stage.room('out', [10, 8, 0]), Stage.fade(1, 0, 700), swalk('you', [8, 9], 3), spose('you', 'pause', 'gentle'), Stage.wait(700), Stage.fade(0, 1, 1000)] });
   finish();
 }
-function finish() { S.beat = 'end'; S.ch = 4; S.card = null; }
+function finish() { S.beat = 'end'; S.ch = 4; S.card = null; if (!S.runId) S.runId = newRun(); }
 function endingKind() { return S.flags.R === 'yes' ? 'A' : S.flags.R === 'pause' ? 'B' : 'C'; }
 
 // ---- 結局 ----
@@ -2281,8 +2303,10 @@ function render() {
   const home = !S || U.home;
   $('scene-controls').hidden = home || !U.cinema;
   $('mbtn').disabled = !!U.cinema;
-  $('end').hidden = true; $('game').hidden = false; $('help').hidden = false;
-  if (S && S.beat === 'end' && !home && !U.dlg) { BGM.update(); $('game').hidden = true; $('help').hidden = true; $('end').hidden = false; $('end').innerHTML = endHTML(); return; }
+  const endEl = $('end'), endShown = !endEl.hidden && endEl.dataset.run === String(S && S.runId);
+  endEl.hidden = true; $('game').hidden = false; $('help').hidden = false;
+  // 結局畫面已經顯示時不重畫，訪客簿正在輸入的內容與游標才不會被洗掉
+  if (S && S.beat === 'end' && !home && !U.dlg) { BGM.update(); $('game').hidden = true; $('help').hidden = true; endEl.hidden = false; if (!endShown) { endEl.innerHTML = endHTML(); endEl.dataset.run = String(S.runId); } return; }
   BGM.update(); const sbt = $('sbtn'); sbt.textContent = BGM.on ? '音樂開' : '音樂關'; sbt.classList.toggle('off', !BGM.on); sbt.setAttribute('aria-pressed', BGM.on); sbt.hidden = home;
   $('goal').textContent = [goalText(), clockText()].filter(Boolean).join('\n');
   $('mbtn').hidden = home || !!S.card;
@@ -2390,6 +2414,7 @@ function endHTML() {
   <h3>故事與史實說明</h3><p>本劇家族、借宿與問話事件為虛構情節，不得以劇中情節當作真實個案史料。</p>
   <p class="small">背景音樂為原創合成，未取材任何傳統曲調。</p>
   <p>如果你想起了自己家裡答不出來的某個名字，那是屬於你家人的事。問或不問，什麼時候問，都由你決定。</p>
+  ${FEEDBACK.html(FEEDBACK.run())}
   <div class="ph"><button class="pbtn" data-h="new">從頭再玩一次</button></div>
   <p class="small">字型：俐方體11號（Cubic 11，SIL Open Font License 1.1）。</p>`;
 }
@@ -2518,7 +2543,7 @@ function enterCard() {
 }
 const KEYD = { ArrowDown: 0, ArrowUp: 1, ArrowRight: 2, ArrowLeft: 3, s: 0, w: 1, d: 2, a: 3 };
 document.addEventListener('keydown', ev => {
-  if (ev.target.tagName === 'INPUT') return;
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName)) return;
   const k = ev.key;
   if (ev.target.closest('button') && (k === 'Enter' || k === ' ')) return;
   if (U.cinema) { if (k === 'Escape') finishScene(); else if (k === ' ' || k === 'Enter' || k === 'z') advance(); else if (!(k in KEYD)) return; ev.preventDefault(); return; }
