@@ -2,7 +2,7 @@
 // 每位玩家拿到一個隨機的「借來的名字」，只用來區分回饋，不收真實姓名。
 // 問卷在遊戲裡進行（文彬的訪客簿），不連外部表單；寫好的每一頁存在這台裝置上，
 // 可以複製或下載成文字檔，活動結束時把整台裝置的訪客簿一次下載。
-// mail-config.js 填好 Web3Forms 的 Access Key 後，交出時會在背景把這一頁寄到製作團隊的信箱；
+// mail-config.js 填好收信信箱後，交出時會透過 FormSubmit 在背景把這一頁寄到製作團隊的信箱；
 // 寄不出去（沒網路、服務暫停）時先排隊，下次打開遊戲再補寄，遊戲本身不受影響。
 const FEEDBACK = (() => {
 
@@ -41,16 +41,17 @@ const FEEDBACK = (() => {
   }
   function context(f = facts()) { return `結局 ${f.ending}｜未走到的對話 ${f.missed ?? ''} 段｜${f.at}`; }
 
-  // ---------- 寄信（Web3Forms）：只能寄到綁定的信箱 ----------
+  // ---------- 寄信（FormSubmit）：寄到 mail-config.js 指定的信箱 ----------
   const MAIL = (typeof window !== 'undefined' && window.GUESTBOOK_MAIL) || {};
-  const cloudOn = () => !!MAIL.key;
+  const mailTo = () => { const t = String(MAIL.to || '').trim(); if (!t || t.includes('@')) return t; try { const d = atob(t); return d.includes('@') ? d : t; } catch { return t; } };
+  const cloudOn = () => !!mailTo();
   const QKEY = 'bwjm.rpg2.mailq';
   const queue = () => { try { return JSON.parse(localStorage.getItem(QKEY)) || []; } catch { return []; } };
   const setQueue = q => { try { localStorage.setItem(QKEY, JSON.stringify(q.slice(-60))); } catch {} };
   function enqueue(cur, f) {
     if (!cur.uid) cur.uid = uid();
-    // 信件內容依題目順序排列；Web3Forms 會把每個欄位列成一行
-    const row = { entry_id: cur.uid, subject: `《被遺忘的名字》訪客簿｜${cur.name}（${cur.code}）`, from_name: '文彬的訪客簿', '借來的名字': `${cur.name}（編號 ${cur.code}）`, '結局': f.ending || '—', '未走到的對話': f.missed ?? '—', '交出時間': f.at };
+    // 信件內容依題目順序排列；FormSubmit 會把每個欄位列成表格的一列
+    const row = { entry_id: cur.uid, _subject: `《被遺忘的名字》訪客簿｜${cur.name}（${cur.code}）`, _template: 'table', _captcha: 'false', '借來的名字': `${cur.name}（編號 ${cur.code}）`, '結局': f.ending || '—', '未走到的對話': f.missed ?? '—', '交出時間': f.at };
     QS.forEach(q => { row[`${num(q)}${q.label}`] = String(cur.a[q.id] || '（沒有寫）').slice(0, q.type === 'letter' ? 3000 : 1000); });
     setQueue(queue().filter(r => r.row.entry_id !== cur.uid).concat({ row, tries: 0 }));
   }
@@ -62,12 +63,14 @@ const FEEDBACK = (() => {
         let ok = false;
         try {
           const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 10000);
-          const res = await fetch('https://api.web3forms.com/submit', {
+          const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(mailTo()), {
             method: 'POST', signal: ctl.signal,
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify((({ entry_id, ...rest }) => ({ access_key: MAIL.key, ...rest }))(item.row))
+            body: JSON.stringify((({ entry_id, ...rest }) => rest)(item.row))
           });
-          clearTimeout(t); ok = res.ok && (await res.json().catch(() => ({}))).success === true;
+          clearTimeout(t);
+          // 信箱還沒按「啟用」時 FormSubmit 會回 success:"false"，這一頁留在排隊裡，啟用後下次打開遊戲會補寄
+          ok = res.ok && String((await res.json().catch(() => ({}))).success) === 'true';
         } catch {}
         // 送出成功就從排隊中拿掉；失敗的留著下次再送，試太多次（約 20 次）就放棄，避免永遠卡住
         const q = queue(), i = q.findIndex(r => JSON.stringify(r.row) === JSON.stringify(item.row));
