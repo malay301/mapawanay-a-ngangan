@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>訪客簿後台｜被遺忘的名字</title>
+<style>
+  :root { --bg: #16141f; --box: #23202f; --edge: #4a4466; --text: #ece3cc; --muted: #a59c86; --straw: #e7c46a; --paper: #efe6cc; --ink: #2c2217; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.7 system-ui, "Noto Sans TC", "Microsoft JhengHei", sans-serif; }
+  main { max-width: 920px; margin: 0 auto; padding: 20px 16px 60px; }
+  h1 { font-size: 22px; font-weight: 600; color: var(--straw); margin: 0 0 4px; letter-spacing: .06em; }
+  .muted { color: var(--muted); font-size: 14px; }
+  .card { background: var(--box); border: 2px solid var(--edge); border-radius: 6px; padding: 14px 16px; margin: 14px 0; }
+  label { display: grid; gap: 4px; margin: 10px 0; font-size: 14px; }
+  input { font: inherit; padding: 8px 10px; border-radius: 4px; border: 2px solid var(--edge); background: #12101a; color: var(--text); }
+  button { font: inherit; cursor: pointer; padding: 7px 14px; border-radius: 4px; border: 2px solid var(--edge); background: #2e2a40; color: var(--text); }
+  button.pri { background: var(--straw); border-color: var(--straw); color: #1a1420; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .stat b { display: block; font-size: 26px; color: var(--straw); font-weight: 600; }
+  .entry { background: var(--paper); color: var(--ink); border-radius: 4px; padding: 12px 16px; margin: 12px 0; }
+  .entry h3 { margin: 0; font-size: 17px; }
+  .entry .meta { font-size: 13px; color: #6b5a3a; margin-bottom: 8px; }
+  .entry p { margin: 0 0 .6em; white-space: pre-wrap; }
+  .entry .q { font-weight: 600; }
+  .thoughts { border-left: 4px solid #b38b4a; padding-left: 10px; }
+  #msg { min-height: 1.5em; }
+  .err { color: #ff9b8a; }
+</style>
+</head>
+<body>
+<main>
+  <h1>文彬的訪客簿・後台</h1>
+  <p class="muted">只有在 Supabase 設定為管理者的帳號登入後才看得到內容。這一頁不會出現在遊戲裡，也不會被搜尋引擎收錄。</p>
+
+  <section class="card" id="login" hidden>
+    <form id="loginForm">
+      <label>Email<input type="email" id="email" autocomplete="username" required></label>
+      <label>密碼<input type="password" id="pw" autocomplete="current-password" required></label>
+      <div class="row"><button class="pri" type="submit">登入</button></div>
+    </form>
+  </section>
+
+  <section id="board" hidden>
+    <div class="row">
+      <button class="pri" id="reload" type="button">重新整理</button>
+      <button id="dlTxt" type="button">下載全部（文字檔）</button>
+      <button id="dlCsv" type="button">下載全部（Excel 可開的 CSV）</button>
+      <input id="search" type="search" placeholder="搜尋名字、編號或內容" style="flex:1;min-width:180px">
+      <button id="logout" type="button">登出</button>
+    </div>
+    <div class="card"><div class="stats" id="stats"></div></div>
+    <div id="list"></div>
+  </section>
+
+  <p id="msg" aria-live="polite"></p>
+</main>
+
+<script src="cloud-config.js"></script>
+<script src="feedback.js"></script>
+<script>
+(() => {
+  const C = window.GUESTBOOK_CLOUD || {}, BASE = (C.url || '').replace(/\/+$/, '');
+  const QS = FEEDBACK.QS, $ = id => document.getElementById(id);
+  const h = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const TK = 'bwjm.admin.session';
+  let rows = [];
+  const msg = (t, err) => { $('msg').textContent = t; $('msg').className = err ? 'err' : 'muted'; };
+  const session = () => { try { return JSON.parse(sessionStorage.getItem(TK)); } catch { return null; } };
+
+  if (!BASE || !C.key) { msg('還沒有設定雲端：請先在 cloud-config.js 填入 Supabase 的網址與公開金鑰。', true); return; }
+
+  async function login(email, password) {
+    const r = await fetch(`${BASE}/auth/v1/token?grant_type=password`, { method: 'POST', headers: { apikey: C.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error_description || j.msg || j.message || '登入失敗');
+    sessionStorage.setItem(TK, JSON.stringify({ token: j.access_token, refresh: j.refresh_token, exp: Date.now() + (j.expires_in || 3600) * 1000 }));
+  }
+  async function token() {
+    const s = session(); if (!s) return null;
+    if (Date.now() < s.exp - 60000) return s.token;
+    const r = await fetch(`${BASE}/auth/v1/token?grant_type=refresh_token`, { method: 'POST', headers: { apikey: C.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh_token: s.refresh }) });
+    if (!r.ok) { sessionStorage.removeItem(TK); return null; }
+    const j = await r.json();
+    sessionStorage.setItem(TK, JSON.stringify({ token: j.access_token, refresh: j.refresh_token, exp: Date.now() + (j.expires_in || 3600) * 1000 }));
+    return j.access_token;
+  }
+
+  async function load() {
+    const t = await token(); if (!t) return show(false);
+    msg('讀取中……');
+    const all = [];
+    for (let from = 0; ; from += 1000) {
+      const r = await fetch(`${BASE}/rest/v1/guestbook?select=*&order=created_at.desc`, { headers: { apikey: C.key, Authorization: `Bearer ${t}`, Range: `${from}-${from + 999}` } });
+      if (r.status === 401) { sessionStorage.removeItem(TK); return show(false); }
+      if (!r.ok) { msg('讀取失敗：' + r.status + ' ' + (await r.text()), true); return; }
+      const part = await r.json(); all.push(...part); if (part.length < 1000) break;
+    }
+    // 同一頁交出後又「翻回去改一改」再交，只保留最新的一份
+    const seen = new Set(); rows = all.filter(x => !seen.has(x.entry_id) && seen.add(x.entry_id));
+    show(true); render();
+    msg(rows.length ? `共 ${rows.length} 頁，最新一頁在 ${fmt(rows[0].created_at)}。` : '登入成功，但還沒有任何回饋。如果確定有人交過，請檢查 setup.sql 最下面的 Email 是否跟你登入的 Email 一樣。');
+  }
+  const fmt = t => new Date(t).toLocaleString('zh-TW', { hour12: false });
+  const num = q => { const i = QS.filter(x => x.type !== 'letter').indexOf(q); return i < 0 ? '' : `${i + 1}. `; };
+
+  function stats() {
+    const out = [`<div class="stat"><b>${rows.length}</b>份回饋</div>`];
+    QS.filter(q => q.type === 'scale').forEach(q => {
+      const v = rows.map(r => Number(r.answers?.[q.id])).filter(n => n >= 1 && n <= 5);
+      out.push(`<div class="stat"><b>${v.length ? (v.reduce((a, b) => a + b, 0) / v.length).toFixed(1) : '—'}</b>${h(q.label)}（平均，${v.length} 人答）</div>`);
+    });
+    QS.filter(q => q.type === 'pick').forEach(q => {
+      out.push(`<div class="stat">${h(q.label)}<br>${q.opts.map(o => `${h(o)} <b style="display:inline;font-size:20px">${rows.filter(r => r.answers?.[q.id] === o).length}</b>`).join('　')}</div>`);
+    });
+    const ends = {}; rows.forEach(r => { const k = r.ending || '未知'; ends[k] = (ends[k] || 0) + 1; });
+    out.push(`<div class="stat">結局分布<br>${Object.entries(ends).map(([k, n]) => `${h(k)}：${n}`).join('　')}</div>`);
+    return out.join('');
+  }
+  function entryHTML(r) {
+    return `<article class="entry"><h3>${h(r.name)}　<span class="meta">編號 ${h(r.code)}</span></h3>
+      <div class="meta">收到 ${fmt(r.created_at)}｜結局 ${h(r.ending)}｜未走到的對話 ${h(r.missed ?? '')} 段</div>
+      ${QS.map(q => q.type === 'letter' ? `<p class="q">${h(q.label)}</p><p class="thoughts">${h(r.answers?.[q.id] || '（沒有寫）')}</p>` : `<p><span class="q">${num(q)}${h(q.label)}</span><br>${h(r.answers?.[q.id] || '（沒有寫）')}</p>`).join('')}</article>`;
+  }
+  function render() {
+    const k = $('search').value.trim().toLowerCase();
+    const list = k ? rows.filter(r => JSON.stringify([r.name, r.code, r.answers]).toLowerCase().includes(k)) : rows;
+    $('stats').innerHTML = stats();
+    $('list').innerHTML = list.map(entryHTML).join('') || '<p class="muted">沒有符合的回饋。</p>';
+  }
+  function asText(r) {
+    return [`名字：${r.name}（編號 ${r.code}）`, `收到 ${fmt(r.created_at)}｜結局 ${r.ending}｜未走到的對話 ${r.missed ?? ''} 段`, '',
+      ...QS.flatMap(q => q.type === 'letter' ? [`【${q.label}】`, r.answers?.[q.id] || '（沒有寫）', ''] : [`${num(q)}${q.label}`, `   ${r.answers?.[q.id] || '（沒有寫）'}`])].join('\n');
+  }
+  function file(name, text, type) {
+    const url = URL.createObjectURL(new Blob([text], { type }));
+    const a = Object.assign(document.createElement('a'), { href: url, download: name });
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  const day = () => new Date().toISOString().slice(0, 10);
+  const csvCell = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+
+  function show(on) { $('login').hidden = on; $('board').hidden = !on; if (!on) msg('請用你在 Supabase 建立的管理者帳號登入。'); }
+
+  $('loginForm').addEventListener('submit', async e => {
+    e.preventDefault(); msg('登入中……');
+    try { await login($('email').value.trim(), $('pw').value); $('pw').value = ''; await load(); } catch (err) { msg(err.message, true); }
+  });
+  $('reload').onclick = load;
+  $('search').oninput = render;
+  $('logout').onclick = () => { sessionStorage.removeItem(TK); rows = []; $('list').innerHTML = ''; show(false); };
+  $('dlTxt').onclick = () => file(`被遺忘的名字_雲端訪客簿_${day()}_${rows.length}頁.txt`, rows.map(asText).join('\n\n──────────\n\n'), 'text/plain;charset=utf-8');
+  $('dlCsv').onclick = () => {
+    const head = ['收到時間', '名字', '編號', '結局', '未走到的對話', ...QS.map(q => q.label)];
+    const body = rows.map(r => [fmt(r.created_at), r.name, r.code, r.ending, r.missed, ...QS.map(q => r.answers?.[q.id] || '')]);
+    file(`被遺忘的名字_雲端訪客簿_${day()}.csv`, '﻿' + [head, ...body].map(l => l.map(csvCell).join(',')).join('\r\n'), 'text/csv;charset=utf-8');
+  };
+
+  session() ? load().catch(e => msg(e.message, true)) : show(false);
+})();
+</script>
+</body>
+</html>

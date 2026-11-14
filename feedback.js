@@ -2,6 +2,8 @@
 // 每位玩家拿到一個隨機的「借來的名字」，只用來區分回饋，不收真實姓名。
 // 問卷在遊戲裡進行（文彬的訪客簿），不連外部表單；寫好的每一頁存在這台裝置上，
 // 可以複製或下載成文字檔，活動結束時把整台裝置的訪客簿一次下載。
+// cloud-config.js 填好 Supabase 網址與公開金鑰後，交出時會在背景另外送一份到雲端資料庫；
+// 送不出去（沒網路、服務暫停）時先排隊，下次打開遊戲再補送，遊戲本身不受影響。
 const FEEDBACK = (() => {
 
   const NAME_A = ['提水的', '守著米缸的', '坐在廊下的', '聽歌的', '翻謄本的', '記筆記的', '等麴的', '夜裡醒著的', '找名字的', '看照片的', '收好信的', '扶著米缸的', '數星星的', '慢慢問的', '把話記下的', '走過院子的'];
@@ -27,13 +29,64 @@ const FEEDBACK = (() => {
   // 每一局的草稿：結局畫面出現時才給名字，從頭再玩會換一局
   function draft(run) {
     const d = load();
-    if (!d.cur || d.cur.run !== run) { d.cur = { run, name: newName(), code: newCode(), a: {}, sent: false }; store(d); }
+    if (!d.cur || d.cur.run !== run) { d.cur = { run, uid: uid(), name: newName(), code: newCode(), a: {}, sent: false }; store(d); }
     return d;
   }
-  function context() {
-    const ending = typeof endingKind === 'function' ? endingKind() : '';
-    const missed = typeof MISSED !== 'undefined' && typeof S !== 'undefined' && S ? MISSED.filter(m => m[0](S)).length : '';
-    return `結局 ${ending}｜未走到的對話 ${missed} 段｜${new Date().toLocaleString('zh-TW', { hour12: false })}`;
+  const uid = () => { try { return crypto.randomUUID(); } catch { return Date.now().toString(36) + Math.random().toString(36).slice(2, 12); } };
+  function facts() {
+    let ending = '', missed = null;
+    try { ending = typeof endingKind === 'function' ? String(endingKind() ?? '') : ''; } catch {}
+    try { missed = typeof MISSED !== 'undefined' && typeof S !== 'undefined' && S ? MISSED.filter(m => m[0](S)).length : null; } catch {}
+    return { ending, missed, at: new Date().toLocaleString('zh-TW', { hour12: false }) };
+  }
+  function context(f = facts()) { return `結局 ${f.ending}｜未走到的對話 ${f.missed ?? ''} 段｜${f.at}`; }
+
+  // ---------- 雲端（Supabase）：只新增、不讀取 ----------
+  const CLOUD = (typeof window !== 'undefined' && window.GUESTBOOK_CLOUD) || {};
+  const cloudOn = () => !!(CLOUD.url && CLOUD.key);
+  const QKEY = 'bwjm.rpg2.cloudq';
+  const queue = () => { try { return JSON.parse(localStorage.getItem(QKEY)) || []; } catch { return []; } };
+  const setQueue = q => { try { localStorage.setItem(QKEY, JSON.stringify(q.slice(-60))); } catch {} };
+  function enqueue(cur, f) {
+    if (!cur.uid) cur.uid = uid();
+    const answers = {}; QS.forEach(q => { if (cur.a[q.id]) answers[q.id] = String(cur.a[q.id]).slice(0, q.type === 'letter' ? 3000 : 1000); });
+    const row = { entry_id: cur.uid, name: cur.name, code: cur.code, ending: f.ending.slice(0, 40), missed: f.missed, played_at: f.at, answers, version: '1' };
+    setQueue(queue().filter(r => r.row.entry_id !== cur.uid).concat({ row, tries: 0 }));
+  }
+  let flushing = null;
+  function flush() {
+    if (!cloudOn() || flushing) return flushing || Promise.resolve();
+    flushing = (async () => {
+      for (const item of queue()) {
+        let ok = false;
+        try {
+          const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 10000);
+          const res = await fetch(CLOUD.url.replace(/\/+$/, '') + '/rest/v1/guestbook', {
+            method: 'POST', signal: ctl.signal,
+            headers: { apikey: CLOUD.key, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+            body: JSON.stringify(item.row)
+          });
+          clearTimeout(t); ok = res.ok;
+        } catch {}
+        // 送出成功就從排隊中拿掉；失敗的留著下次再送，試太多次（約 20 次）就放棄，避免永遠卡住
+        const q = queue(), i = q.findIndex(r => JSON.stringify(r.row) === JSON.stringify(item.row));
+        if (i >= 0) { if (ok || ++q[i].tries >= 20) q.splice(i, 1); setQueue(q); }
+        if (ok) mark(item.row.entry_id, 'ok'); else break;
+      }
+      queue().forEach(r => mark(r.row.entry_id, 'wait'));
+    })().finally(() => { flushing = null; });
+    return flushing;
+  }
+  function mark(id, st) {
+    const d = load(); if (!d.cur || d.cur.uid !== id) return;
+    d.cur.cloud = st; store(d);
+    const el = document.getElementById('fbcloud'); if (el) el.textContent = cloudText(d.cur);
+  }
+  function cloudText(cur) {
+    if (!cloudOn()) return '這一頁存在這台裝置上。帶活動的人可以用下面的按鈕把訪客簿複製或下載下來。';
+    if (cur.cloud === 'ok') return '這一頁已經送到製作團隊那裡了，這台裝置上也留了一份。';
+    if (cur.cloud === 'wait') return '現在送不出去（可能沒有網路），這一頁先存在這台裝置上，下次有網路打開遊戲時會自動補送。也可以用下面的按鈕複製或下載。';
+    return '正在把這一頁送到製作團隊那裡……';
   }
   // 心得是獨立的一頁，不編號；其他題從 1 開始
   const num = q => { const i = QS.filter(x => x.type !== 'letter').indexOf(q); return i < 0 ? '' : `${i + 1}. `; };
@@ -60,7 +113,7 @@ const FEEDBACK = (() => {
       <h3>文彬的訪客簿</h3>
       <p class="lastline"><b>文彬</b>收到了，${h(cur.name)}。我會跟今晚的筆記放在一起。</p>
       <div class="letterdoc fbpage"><p class="small" style="color:#6b5a3a">訪客簿｜${h(cur.name)}　編號 ${h(cur.code)}</p>${QS.map(q => q.type === 'letter' ? `<p><b>${h(q.label)}</b></p><p class="fbthoughts">${h(cur.a[q.id] || '（沒有寫）')}</p>` : `<p><b>${num(q)}${h(q.label)}</b><br>${h(cur.a[q.id] || '（沒有寫）')}</p>`).join('')}</div>
-      <p class="small">這一頁存在這台裝置上。帶活動的人可以用下面的按鈕把訪客簿複製或下載下來。</p>
+      <p class="small" id="fbcloud" aria-live="polite">${h(cloudText(cur))}</p>
       ${tools}
       <div class="ph"><button class="pbtn" data-fb="again" type="button">翻回去改一改</button></div>
     </div>`;
@@ -94,10 +147,13 @@ const FEEDBACK = (() => {
     if (a === 'again') { cur.sent = false; store(d); return redraw(run); }
     if (a === 'send') {
       if (!QS.some(q => cur.a[q.id])) return msg('至少寫一題再交給文彬。');
-      cur.sent = true; cur.ctx = context(); store(d);
+      const f = facts();
+      cur.sent = true; cur.ctx = context(f); cur.cloud = cloudOn() ? 'sending' : ''; store(d);
       const b = book().filter(e => e.run !== cur.run); b.push({ run: cur.run, text: asText(cur) });
       try { localStorage.setItem(LOG, JSON.stringify(b)); } catch {}
-      redraw(run); return document.getElementById('fb').scrollIntoView({ block: 'start', behavior: 'smooth' });
+      if (cloudOn()) { enqueue(cur, f); store(d); }
+      redraw(run); document.getElementById('fb').scrollIntoView({ block: 'start', behavior: 'smooth' });
+      return flush();
     }
     if (a === 'copy') {
       try { await navigator.clipboard.writeText(asText(cur)); msg('已複製，可以貼到訊息裡傳出去。'); }
@@ -108,9 +164,12 @@ const FEEDBACK = (() => {
     if (a === 'all') { const b = book(); file(`被遺忘的名字_訪客簿_全部${b.length}頁.txt`, b.map(e => e.text).join('\n\n──────────\n\n')); return msg(`已下載 ${b.length} 頁。`); }
   }
 
+  // 打開遊戲或恢復網路時，把之前沒送出去的頁面補送（在背景進行，不影響遊戲）
+  if (typeof window !== 'undefined') { addEventListener('load', () => setTimeout(flush, 1500)); addEventListener('online', () => flush()); }
+
   document.addEventListener('input', save);
   document.addEventListener('change', save);
   document.addEventListener('click', ev => { const b = ev.target.closest && ev.target.closest('[data-fb]'); if (b) { ev.preventDefault(); act(b.dataset.fb, FEEDBACK.run()); } });
 
-  return { html, run: () => (typeof S !== 'undefined' && S && S.runId) || 'run', QS, NAME_A, NAME_B, asText, book };
+  return { html, run: () => (typeof S !== 'undefined' && S && S.runId) || 'run', QS, NAME_A, NAME_B, asText, book, flush, queue };
 })();

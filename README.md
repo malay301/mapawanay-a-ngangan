@@ -15,6 +15,6 @@
 
 瀏覽器回歸檢查：`node tests/presentation-smoke.mjs`（需要 Node.js 22 以上與 Chromium；可用 `CHROMIUM` 指定執行檔）。測試會使用獨立的暫存瀏覽器資料，不會改動玩家存檔。
 
-結局之後有「文彬的訪客簿」：每位玩家拿到一個隨機的借來名字（例如「提水的旅人」），在遊戲裡回答幾題對遊戲與內容的想法。寫好的頁面只存在那台裝置上，不會上傳；帶活動的人可以在結局畫面複製、下載單頁，或一次下載整台裝置的訪客簿。題目與名字池在 `feedback.js` 的 `QS`、`NAME_A`、`NAME_B`。
+結局之後有「文彬的訪客簿」：每位玩家拿到一個隨機的借來名字（例如「提水的旅人」），在遊戲裡回答幾題對遊戲與內容的想法。寫好的頁面會存在那台裝置上；`cloud-config.js` 填好 Supabase 設定後，交出時也會在背景送到雲端資料庫，製作團隊在 `admin.html` 登入查看（設定步驟見 [雲端訪客簿設定](docs/雲端訪客簿設定.md)）。送不出去時會排隊補送，結局畫面的複製、下載單頁與一次下載整台裝置的訪客簿也都保留。題目與名字池在 `feedback.js` 的 `QS`、`NAME_A`、`NAME_B`。
 
-演出資料及擴充方式見 [劇情演出說明](docs/presentation.md)。部署時請一併上傳 `presentation.js`、`feedback.js` 與更新後的 `sw.js`。
+演出資料及擴充方式見 [劇情演出說明](docs/presentation.md)。部署時請一併上傳 `presentation.js`、`feedback.js`、`cloud-config.js`、`admin.html` 與更新後的 `sw.js`。
