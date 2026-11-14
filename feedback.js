@@ -2,8 +2,8 @@
 // 每位玩家拿到一個隨機的「借來的名字」，只用來區分回饋，不收真實姓名。
 // 問卷在遊戲裡進行（文彬的訪客簿），不連外部表單；寫好的每一頁存在這台裝置上，
 // 可以複製或下載成文字檔，活動結束時把整台裝置的訪客簿一次下載。
-// cloud-config.js 填好 Supabase 網址與公開金鑰後，交出時會在背景另外送一份到雲端資料庫；
-// 送不出去（沒網路、服務暫停）時先排隊，下次打開遊戲再補送，遊戲本身不受影響。
+// mail-config.js 填好 Web3Forms 的 Access Key 後，交出時會在背景把這一頁寄到製作團隊的信箱；
+// 寄不出去（沒網路、服務暫停）時先排隊，下次打開遊戲再補寄，遊戲本身不受影響。
 const FEEDBACK = (() => {
 
   const NAME_A = ['提水的', '守著米缸的', '坐在廊下的', '聽歌的', '翻謄本的', '記筆記的', '等麴的', '夜裡醒著的', '找名字的', '看照片的', '收好信的', '扶著米缸的', '數星星的', '慢慢問的', '把話記下的', '走過院子的'];
@@ -41,16 +41,17 @@ const FEEDBACK = (() => {
   }
   function context(f = facts()) { return `結局 ${f.ending}｜未走到的對話 ${f.missed ?? ''} 段｜${f.at}`; }
 
-  // ---------- 雲端（Supabase）：只新增、不讀取 ----------
-  const CLOUD = (typeof window !== 'undefined' && window.GUESTBOOK_CLOUD) || {};
-  const cloudOn = () => !!(CLOUD.url && CLOUD.key);
-  const QKEY = 'bwjm.rpg2.cloudq';
+  // ---------- 寄信（Web3Forms）：只能寄到綁定的信箱 ----------
+  const MAIL = (typeof window !== 'undefined' && window.GUESTBOOK_MAIL) || {};
+  const cloudOn = () => !!MAIL.key;
+  const QKEY = 'bwjm.rpg2.mailq';
   const queue = () => { try { return JSON.parse(localStorage.getItem(QKEY)) || []; } catch { return []; } };
   const setQueue = q => { try { localStorage.setItem(QKEY, JSON.stringify(q.slice(-60))); } catch {} };
   function enqueue(cur, f) {
     if (!cur.uid) cur.uid = uid();
-    const answers = {}; QS.forEach(q => { if (cur.a[q.id]) answers[q.id] = String(cur.a[q.id]).slice(0, q.type === 'letter' ? 3000 : 1000); });
-    const row = { entry_id: cur.uid, name: cur.name, code: cur.code, ending: f.ending.slice(0, 40), missed: f.missed, played_at: f.at, answers, version: '1' };
+    // 信件內容依題目順序排列；Web3Forms 會把每個欄位列成一行
+    const row = { entry_id: cur.uid, subject: `《被遺忘的名字》訪客簿｜${cur.name}（${cur.code}）`, from_name: '文彬的訪客簿', '借來的名字': `${cur.name}（編號 ${cur.code}）`, '結局': f.ending || '—', '未走到的對話': f.missed ?? '—', '交出時間': f.at };
+    QS.forEach(q => { row[`${num(q)}${q.label}`] = String(cur.a[q.id] || '（沒有寫）').slice(0, q.type === 'letter' ? 3000 : 1000); });
     setQueue(queue().filter(r => r.row.entry_id !== cur.uid).concat({ row, tries: 0 }));
   }
   let flushing = null;
@@ -61,12 +62,12 @@ const FEEDBACK = (() => {
         let ok = false;
         try {
           const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 10000);
-          const res = await fetch(CLOUD.url.replace(/\/+$/, '') + '/rest/v1/guestbook', {
+          const res = await fetch('https://api.web3forms.com/submit', {
             method: 'POST', signal: ctl.signal,
-            headers: { apikey: CLOUD.key, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-            body: JSON.stringify(item.row)
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify((({ entry_id, ...rest }) => ({ access_key: MAIL.key, ...rest }))(item.row))
           });
-          clearTimeout(t); ok = res.ok;
+          clearTimeout(t); ok = res.ok && (await res.json().catch(() => ({}))).success === true;
         } catch {}
         // 送出成功就從排隊中拿掉；失敗的留著下次再送，試太多次（約 20 次）就放棄，避免永遠卡住
         const q = queue(), i = q.findIndex(r => JSON.stringify(r.row) === JSON.stringify(item.row));
@@ -84,9 +85,9 @@ const FEEDBACK = (() => {
   }
   function cloudText(cur) {
     if (!cloudOn()) return '這一頁存在這台裝置上。帶活動的人可以用下面的按鈕把訪客簿複製或下載下來。';
-    if (cur.cloud === 'ok') return '這一頁已經送到製作團隊那裡了，這台裝置上也留了一份。';
-    if (cur.cloud === 'wait') return '現在送不出去（可能沒有網路），這一頁先存在這台裝置上，下次有網路打開遊戲時會自動補送。也可以用下面的按鈕複製或下載。';
-    return '正在把這一頁送到製作團隊那裡……';
+    if (cur.cloud === 'ok') return '這一頁已經寄給製作團隊了，這台裝置上也留了一份。';
+    if (cur.cloud === 'wait') return '現在寄不出去（可能沒有網路），這一頁先存在這台裝置上，下次有網路打開遊戲時會自動補寄。也可以用下面的按鈕複製或下載。';
+    return '正在把這一頁寄給製作團隊……';
   }
   // 心得是獨立的一頁，不編號；其他題從 1 開始
   const num = q => { const i = QS.filter(x => x.type !== 'letter').indexOf(q); return i < 0 ? '' : `${i + 1}. `; };
@@ -164,7 +165,7 @@ const FEEDBACK = (() => {
     if (a === 'all') { const b = book(); file(`被遺忘的名字_訪客簿_全部${b.length}頁.txt`, b.map(e => e.text).join('\n\n──────────\n\n')); return msg(`已下載 ${b.length} 頁。`); }
   }
 
-  // 打開遊戲或恢復網路時，把之前沒送出去的頁面補送（在背景進行，不影響遊戲）
+  // 打開遊戲或恢復網路時，把之前沒寄出去的頁面補寄（在背景進行，不影響遊戲）
   if (typeof window !== 'undefined') { addEventListener('load', () => setTimeout(flush, 1500)); addEventListener('online', () => flush()); }
 
   document.addEventListener('input', save);
