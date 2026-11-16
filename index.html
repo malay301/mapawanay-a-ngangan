@@ -82,6 +82,10 @@ button, input { font: inherit; color: inherit; }
 .dlg.nar .tx { color: #d6cfbf; }
 .tx { margin: 0; font-size: 16px; line-height: 1.75; white-space: pre-wrap; word-break: break-word; }
 .more { position: absolute; right: 10px; bottom: 6px; font-size: 12px; color: var(--straw); }
+.skipr { position: absolute; right: 26px; bottom: 4px; font: inherit; font-size: 12px; color: #ffe0a0; background: #342a3f; border: 1px solid #96805d; padding: 4px 8px; cursor: pointer; z-index: 2; }
+.tagk { color: var(--straw); font-size: 12px; margin-right: 2px; }
+.home .modes { display: grid; gap: 8px; }
+.home .modes small { display: block; font-size: 12px; opacity: .8; margin-top: 2px; }
 @media (prefers-reduced-motion: no-preference) { .more { animation: blink 1s steps(2) infinite; } @keyframes blink { 50% { opacity: 0; } } }
 .mt { margin: 0 0 6px; font-size: 14px; color: var(--muted); white-space: pre-line; }
 .opts { display: grid; gap: 2px; }
@@ -160,6 +164,8 @@ button, input { font: inherit; color: inherit; }
 .end a { color: var(--straw); word-break: break-all; }
 .lastline { border: 3px double var(--boxEdge); background: var(--box); padding: 8px 12px; } .lastline b { display: block; font-weight: 400; color: var(--straw); font-size: 14px; letter-spacing: .1em; }
 .end details summary { cursor: pointer; color: var(--straw); }
+.end details { margin: 12px 0; }
+.panel details summary { cursor: pointer; color: var(--straw); }
 .fb { display: grid; gap: 12px; border-top: 2px dashed var(--boxEdge); padding-top: 14px; }
 .fbname { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .fbname b { color: var(--straw); font-weight: 400; font-size: 20px; letter-spacing: .08em; }
@@ -780,36 +786,36 @@ const ITEMS = {
 };
 // 筆記本：saw 紙上看得見 / rem 當事人記得 / told 長輩曾經轉述；第三欄是出示證物時的短標籤
 const FACTS = {
-  tb: ['saw', '謄本上有一位「戶長之母」，民國前二十三年生，三女。奕翔不認得這個名字，與本家的關係尚待詢問。', '謄本上的「戶長之母」'],
+  tb: ['saw', '謄本上的「戶長之母」，民國前二十三年生，三女。奕翔不認得她。', '謄本上的「戶長之母」'],
   rice: ['saw', '阿公備了一缸糯米，籤上寫「備好了」。', '阿公的米籤「備好了」'],
-  who: ['told', '玉珍認為謄本中的女性可能是三人的共同高祖母。先記為家族說法，等待照片辨認與資料核對。', '玉珍：她可能是共同的高祖母'],
-  name: ['told', '玉珍曾聽阿嬤說過祖先的族語名字，目前無法完整、確定地念出來。她認為與紙上的女性有關，仍待核對。', '玉珍聽阿嬤說過她的族語名字'],
+  who: ['told', '玉珍認為她可能是三人共同的高祖母。', '玉珍：她可能是共同的高祖母'],
+  name: ['told', '玉珍聽阿嬤說過她的族語名字，但現在念不完整。', '玉珍聽阿嬤說過她的族語名字'],
   fire: ['told', '五十年前，家裡燒了一位長輩的東西。（世昌的阿公說的）', '世昌阿公：五十年前燒過她的東西'],
   photo: ['told', '世昌的阿公從火邊撿回一張照片。', '世昌阿公從火邊撿回照片'],
   mdburn: ['rem', '叔公承認：東西是他拿出去燒的。', '叔公：東西是我拿出去燒的'],
-  jh: ['rem', '建和目前無法辨認名字，但能協助核對玉珍想起的發音，或向其他長輩詢問。', '建和可以幫忙核對發音'],
-  wb: ['saw', '文彬帶來的舊戶籍影本有姓名改寫痕跡；原字不完整、改寫原因未註明，仍需與奕翔的資料核對是否為同一人。', '文彬的影本：姓名欄被改寫'],
+  jh: ['rem', '建和可以幫忙核對玉珍想起的發音，或去問其他長輩。', '建和可以幫忙核對發音'],
+  wb: ['saw', '文彬的舊戶籍影本上，姓名欄被改寫過，原字不完整。', '文彬的影本：姓名欄被改寫'],
   letter: ['saw', '阿公的信：明仁自述那晚在場、沒有阻止。其餘待回堂屋詢問。', '阿公的信：那晚他在場，沒有阻止'],
   water: ['rem', '她在世時，每天天沒亮就從屋後的小路去提水。（明德）', '叔公：她每天天沒亮去提水'],
-  qu: ['rem', '玉珍記得她的阿嬤以前會送麴來，和明仁一起釀酒。米缸裡的新糯米是否與此有關，仍不確定。', '玉珍：阿嬤以前送麴來一起釀酒'],
-  tin: ['saw', '玉珍在廚房找到裝麴的鐵罐；製作與釀酒的往事尚未詢問。', '廚房找到裝麴的鐵罐'],
+  qu: ['rem', '玉珍的阿嬤以前會送麴來，和明仁一起釀酒。', '玉珍：阿嬤以前送麴來一起釀酒'],
+  tin: ['saw', '玉珍在廚房找到裝麴的鐵罐。', '廚房找到裝麴的鐵罐'],
   rec: ['rem', '建和留著阿嬤演唱生活歌謠的錄音，歌中介紹了她是誰、住哪裡。錄音最後，她對建和說：「名字不會不見。名字會等，等到有人願意再叫它的那一天。」', '建和阿嬤的錄音：名字會等'],
   meal: ['told', '世昌記得他阿公說過，她會站在門口喊外頭的孩子回來吃飯，也會催他們先洗手。阿公曾用族語模仿她說話的口氣。', '世昌阿公：她喊孩子回來吃飯'],
   // 〔新增〕世昌廊下補問
   asked: ['told', '世昌記得他阿公說過，焚燒之前曾有人上門問話；問了什麼，他沒有說清楚。', '世昌阿公：燒之前有人來家裡問話'],
   proposal: ['rem', '明德承認：由他先提議燒掉信件，也是他把東西搬出去。', '叔公：是我先提議燒信'],
   words: ['rem', '焚燒從信件擴及其他遺物。明德曾說：「燒了吧。燒了，就沒有人再笑我們了。」玉珍阿嬤反對，並非全家一致同意。', '叔公：「燒了，就沒有人再笑我們了」'],
-  fear: ['rem', '她曾是部落巫師，明德曾因外界嘲笑而排斥她的身分。她也曾讓一名男子借宿家中，後來有人自稱調查政治案件，追問往來情況。明德在整理遺物、重新翻到信件時，再次想起被問話的恐懼；他未確認每封信的寄件者。', '她是巫師；有人為政治案件來問話'],
-  photo_id: ['rem', '明德辨認照片中的女性為自己的阿嬤；她也是世昌阿公與玉珍阿嬤的阿嬤，是奕翔、玉珍、世昌共同的高祖母。', '叔公認出照片裡是他阿嬤'],
-  fireside: ['rem', '世昌阿公救回自己阿嬤的照片。明德當時知道是他撿的，沒有阻止，也沒有在往後主動談起。世昌阿公如何理解那一夜，仍不能由其他人代答。', '叔公知道照片是世昌阿公撿的'],
+  fear: ['rem', '她曾是部落巫師，明德因被嘲笑而排斥她的身分。後來有人為政治案件上門追問借宿者的事，明德因此害怕那些信。', '她是巫師；有人為政治案件來問話'],
+  photo_id: ['rem', '明德認出照片裡是他阿嬤，也就是奕翔、玉珍、世昌共同的高祖母。', '叔公認出照片裡是他阿嬤'],
+  fireside: ['rem', '世昌阿公從火邊救回照片。明德知道，沒有阻止，之後也沒再提。', '叔公知道照片是世昌阿公撿的'],
   frag: ['rem', '明德保留了一片焚燒後的厚紙。原本的內容無法辨認。', '叔公留下一片燒過的厚紙'],
-  left: ['rem', '照片與殘片是焚燒後留下的物件；鐵罐裡的麴是後來製作的。明仁與玉珍阿嬤過去曾一起釀酒。明德證實，明仁生前想再做一次。', '阿公生前想再釀一次酒'],
-  silence: ['rem', '家人最初因害怕追查而避免讓孩子談論家事；之後又因羞愧、避談衝突，沒有完整交代。生活記憶仍有延續，但名字、親屬關係與當年經過逐漸斷開。', '家人為什麼一直沒講'],
-  same: ['saw', '兩份戶籍的出生日期、出生別相符，仍需完整親屬資料確認。姓名欄曾被改寫，原名、時間與原因未明。姓名改寫尚不能連結到另一件家族事件；先分開查證。', '兩份戶籍的出生日期、出生別相符'],
+  left: ['rem', '阿公生前想再釀一次酒；鐵罐裡的麴是玉珍阿嬤以前送的。', '阿公生前想再釀一次酒'],
+  silence: ['rem', '家人先是怕被追查而不讓孩子談，後來因羞愧、避談衝突，一直沒講完整。', '家人為什麼一直沒講'],
+  same: ['saw', '兩份戶籍的出生日期、出生別相符。姓名改寫的時間與原因還不知道。', '兩份戶籍的出生日期、出生別相符'],
   recall: ['rem', '玉珍透過做麴時的回憶，想起部分發音。完整名字尚未確認。', '玉珍想起名字的一部分'],
   plan_yes: ['rem', '下一次的時間、工作與聯絡人已說好，玉珍確認參與。', '下一次的時間已經說好'],
   plan_later: ['rem', '大家願意繼續找，但尚未約定下一次共同整理的時間。', '還沒約下一次'],
-  md_tomorrow: ['rem', '明德打算隔天詢問做麴的人；這是明德自己的打算，不代表奕翔已答應同行。', '叔公明天要去問做麴的人']
+  md_tomorrow: ['rem', '明德打算明天去問還有誰會做麴。', '叔公明天要去問做麴的人']
 };
 const UNKNOWN = [
   ['祖先名字的完整發音', s => true],
@@ -837,70 +843,59 @@ const ROOM = {
     { id: 'phone', once: true, label: '手機', run: s => {
       act('床上躺著你的手機，你拿起來看，共有三十七則訊息未讀。');
       show('phone');
-      act('最上面是公司群組，有人把主管的醉臉做成了貼圖，也有人在傳各種梗圖，大家狂按讚。');
-      act('往下滑，主管私訊：「奕翔節哀。你的喪假到幾號？你這邊的客戶我先讓Jason擋著。」');
-      act('你請了喪假三天。');
-      act('在公司的請假系統裡，阿公大概跟一場重感冒差不多重。');
-      act('你又想起前陣子，同事一臉揶揄地問你：「所以你是原住民啊？哪一族啊？有沒有族名？」');
-      act('你笑著說：「……撒奇萊雅，族名我也不太清楚。」，接著把那杯酒喝完。');
+      act('主管私訊：「奕翔節哀。喪假到幾號？客戶我先讓Jason擋著。」');
+      act('你只請了三天喪假。在請假系統裡，阿公大概跟一場重感冒差不多重。');
+      act('你想起同事問過：「你是原住民喔？哪一族？有族名嗎？」');
+      act('你笑著說：「撒奇萊雅……族名我也不清楚。」');
       act('大家都笑了，你也笑了。');
       act('你把手機蓋回床上。');
     } },
     { id: 'closet', once: true, label: '衣櫃最底層', run: s => {
-      act('衣櫃門一拉開，樟腦丸的味道整個撲上來。');
-      act('阿公的衣服不多，三件一模一樣的白汗衫、兩條西裝褲、一件只有喝喜酒才穿的寬大舊西裝。');
-      act('最底層壓著一個生鏽的鐵盒。鏽把盒蓋咬得很緊，你用指甲去扳。');
+      act('衣櫃一拉開，樟腦丸味撲上來。阿公的衣服不多，三件白汗衫、兩條西裝褲、一件舊西裝。');
+      act('最底層壓著一個生鏽的鐵盒，盒蓋咬得很緊。');
       say('you', '……扳開了，啊！割到手指了。');
       show('box');
-      act('鐵盒裡面東西不多：幾枚舊硬幣、一條摺得整整齊齊的手帕，還有一張很舊的紙。');
+      act('裡面有幾枚舊硬幣、一條摺好的手帕，和一張很舊的紙。');
       act('你把鐵盒放到地上，用面紙壓住割到的地方。');
       s.flags.box = 1;
     } },
     { id: 'tengben', once: true, label: '戶籍謄本', when: s => s.flags.box, run: s => {
       act('你把那張紙攤開。');
-      act('但那張紙太舊，邊緣脆得像放太久的蘇打餅，感覺一碰就會掉屑，而且黃得不得了。');
       show('tengben');
-      act('這是一張舊的戶籍謄本，戶長的名字你沒看過，也沒聽過，但底下列著戶長的家人。');
+      act('是一張舊戶籍謄本。戶長的名字你沒聽過。');
       act('其中一格，稱謂欄寫著「母」。出生：民國前二十三年三月十日。出生別：三女。');
-      act('不過上面登記名字的部分破了一個洞，只能看出「胡」跟「美」二字，但你也從沒聽過。');
-      act('你在心裡算了一下。');
-      act('這個人比阿公早出生六十年左右，而且這張紙跟阿公私人的東西收在一起……所以她不可能跟這個家沒關係？');
-      act('可是喪禮上、相簿裡、親戚的稱呼裡，沒看過這麼一個人，也沒一個人提過她。');
+      act('名字的地方破了一個洞，只看得出「胡」和「美」。');
+      act('她比阿公早生了六十年左右，卻跟阿公的私人東西收在一起。');
+      act('可是喪禮上、相簿裡，從來沒有人提過她。');
       item('tengben'); fact('tb');
     } },
     { id: 'hanky', once: true, label: '手帕', when: s => s.flags.box, run: s => {
-      act('這是阿公的手帕，被阿公洗到發白，但四個角摺得整齊。');
+      act('阿公的手帕，洗到發白，四個角摺得整齊。');
       show('hanky');
-      act('阿公他們那一代的男人，不知為何特別講究，口袋裡都會有一條這種手帕。');
-      act('你小時候跌倒，他就是用這種手帕幫你擦膝蓋的血，擦完還罵你走路不看路。');
+      act('你小時候跌倒，他就用它幫你擦膝蓋，擦完還罵你走路不看路。');
       act('你沒多想，隨後把它放回鐵盒。');
     } },
     { id: 'rice', once: true, label: '廚房的米缸', run: s => {
-      act('廚房門口的米缸，蓋子是一塊木板。');
-      act('你掀開後，發現米缸是滿的，而且還是新糯米，白得發亮，甚至還帶有一點糯米糠的香。');
+      act('廚房門口的米缸是滿的，全是新糯米，白得發亮。');
       show('rice');
       act('糯米上插著一張小籤，那是阿公的字，上頭寫著：「備好了。」');
       act('備好要幹嘛？');
       item('rice'); fact('rice');
     } },
     { id: 'betel', once: true, label: '抽屜裡的舊塑膠袋', run: s => {
-      act('這張書桌的抽屜永遠卡的不得了，拉開時總是要先往上抬一點。');
+      act('書桌抽屜卡得很緊，你往上抬才拉開。');
       show('betel');
-      act('裡面有一個皺巴巴的塑膠袋，袋子裡頭是空的。');
-      act('但袋子上還印著不知道哪家檳榔攤的名字。');
-      act('你想起兩年前過年，那時你要回台北的那天，阿公塞了一包檳榔到你手裡，用族語說了一句話。');
-      act('你笑著點頭，說「好啦好啦」，不過你沒有多問那是什麼意思。那包檳榔你後來也不知道放到哪裡去了，可能是送給哪個吃檳榔的長輩了。');
-      act('而阿公說的那句話是什麼，你更是不知道。');
-      act('即使現在想問，已經沒有人可以問了。');
+      act('裡面有一個空的檳榔塑膠袋。');
+      act('兩年前過年你要回台北時，阿公塞了一包檳榔給你，用族語說了一句話。');
+      act('你笑著說「好啦好啦」，沒有問那是什麼意思。');
+      act('現在想問，已經沒有人可以問了。');
       s.flags.betel = 1;
     } },
     { id: 'go', label: '去堂屋', when: s => s.items.includes('tengben'), run: s => {
       act('窗外有人喊：「奕翔！你人到了嗎！」是一個你只在電話裡聽過的聲音。');
       act('你把謄本摺好夾在手臂下，推開門走進堂屋。');
-      act('堂屋的燈泡是黃的，一條電線從天花板垂下來，但被電扇吹得輕輕晃。長桌是舊的，桌面被擦得發亮，邊角都磨圓了。');
-      act('桌邊排了一圈紅色塑膠椅，椅子甚至還比人多。');
+      act('堂屋的黃燈泡被電扇吹得輕輕晃。');
       act('五個人已經坐在那裡。');
-      act('有人在喝茶，有人在滑手機，有人什麼都沒做，只是坐著那發呆。');
       act('你把紙放在長桌的空位上。');
       goPlace('hall1');
     } }
@@ -920,9 +915,7 @@ const HALL1 = {
     act('一個戴棒球帽的男人站起來，朝你揮手。');
     intro('shichang');
     say('shichang', '奕翔齁？我世昌啦，電話裡那個啦！本人有比較帥吧？');
-    say('shichang', '那天我打給你，你還接起來問我是不是詐騙集團。我說對啊，我專門騙人回家的啦！');
     say('shichang', '現在大家都到了。你先去跟每個人打個招呼！');
-    act('他坐回去，翻開一本筆記本。筆記本很厚，貼滿了便利貼，邊邊都捲起來了。');
   },
   people: ['mingde', 'yuzhen', 'shichang', 'jianhe', 'wenbin'],
   goals: [['紙上那個人是誰', s => s.facts.who], ['五十年前發生過什麼', s => s.facts.fire], ['阿公的糯米要做什麼', s => !!s.facts.left]],
@@ -946,34 +939,28 @@ const HALL1 = {
 };
 const GREET = {
   mingde: s => {
-    act('明德叔公坐在主位旁邊，兩隻手交握在桌上。手背上的皮皺得像曬乾的豆皮。');
+    act('明德叔公坐在主位旁，兩手交握在桌上。');
     intro('mingde');
     say('you', '叔公。');
-    say('mingde', '嗯。吃飽沒？');
-    say('you', '吃了。');
-    say('mingde', '騙人，你們這些小孩每次都說吃了，結果轉過頭回去就吃沒營養的泡麵。');
+    say('mingde', '嗯。');
     act('他看見你手臂下夾著的紙，眼神停了一下，很快又移開。');
     say('mingde', zy(''));
-    act('他說得很小聲，像是在說族語？');
-    act('你聽不懂，只聽出那個語氣跟你小時候亂翻阿公抽屜時，阿公罵你的語氣一樣。');
+    act('他小聲說了一句族語。你聽不懂，但那語氣跟小時候阿公罵你亂翻抽屜時一模一樣。');
   },
   yuzhen: s => {
     act('玉珍坐在靠窗的位子，正把桌邊散開的雜物往紙箱裡收。');
     intro('yuzhen');
     say('yuzhen', '奕翔，你長好高。');
     say('you', '玉珍姊，上次見是……');
-    say('yuzhen', '我記得是你國中吧。過年我們在這間屋子過年，你一直躲在廁所打電動，打到大家要拍大合照才肯出來。');
-    say('you', '……這個妳也記得。');
-    say('yuzhen', '沒辦法，記性好是我們家的遺傳。');
+    say('yuzhen', '你國中吧。過年你一直躲在廁所打電動，拍大合照才肯出來。');
     act('她笑了一下，把桌邊的一疊舊報紙推整齊。');
   },
   shichang: s => { say('shichang', '找我幹嘛？去啊，先去打招呼。我又不會跑掉。'); },
   jianhe: s => {
-    act('靠門的位子坐著一個年輕男人，脖子上掛著耳機，手機螢幕朝下蓋在桌上。');
+    act('靠門坐著一個掛著耳機的年輕男人。');
     intro('jianhe');
     say('jianhe', zy('jh_hello'));
     say('jianhe', '我是建和，在國小教族語。也姓陳，不過不是你們家的，這一帶姓陳的太多了，丟一顆石頭都會打到三個。');
-    say('jianhe', '我是被玉珍找來的，說是可能會請我幫忙翻譯族語。');
     say('you', '……我聽不太懂族語。');
     say('jianhe', '沒關係啦，我教的那些小朋友也聽不太懂啊，他們甚至還要考試呢。');
   },
@@ -984,20 +971,15 @@ const GREET = {
     say('wenbin', '我是世昌請我來的。');
     say('you', '那你研究二十年，那你應該比我還懂我們家的文化了吧。');
     say('wenbin', '才不會。你做研究做越久，只會覺得自己懂得少。');
-    act('他推了一下眼鏡，把資料夾往腿上壓了壓。');
   }
 };
 function roundStart(s) {
   s.flags.round = 1; s.time = 19 * 60 + 30; s.dl = s.time + 80;
   act('你繞了桌子一圈，回到空著的那張紅椅子。');
-  say('shichang', '好了，既然人都打過招呼了。那一個人講一句，今晚為什麼來。不想講的，說「我先聽」也可以。');
+  say('shichang', '人都到齊了。一人講一句，今晚為什麼來吧。不想講，說「我先聽」也可以。');
   say('mingde', '是你叫我來的。');
-  say('shichang', '叔公，你這不算啦。');
-  say('mingde', '那就兩句，是你叫我來的，然後我就來了。');
   say('yuzhen', '……我阿嬤如果還在，她也會來。');
-  say('jianhe', '我是玉珍找我的，她說可能會用到族語，需要我幫忙。');
-  say('wenbin', '世昌請我來的。我還帶了一份資料……不過它能說的，可能比你們想的少。');
-  act('大家紛紛轉頭看向你。');
+  act('大家轉頭看向你。');
   ask('你要說什麼？', [
     ['「我在整理阿公的東西時，有一個東西我搞不懂。」', s => { say('you', '我在整理阿公的東西時，有一個東西我搞不懂。'); say('shichang', '搞不懂就拿出來啊。我們這桌別的沒有，看不懂的人最多。'); }],
     ['「我先聽。」', s => { say('you', '我先聽。'); act('世昌點點頭，沒有逼你。'); say('mingde', '你們這些小輩就把東西收一收就好啦，翻那些死人骨頭做什麼。'); say('shichang', '叔公你別那麼急，你也先聽一下啦！'); }]
@@ -1015,7 +997,7 @@ const T1 = {
       say('mingde', '囡仔人問遮多衝啥？');
       ask('你怎麼回？', [
         ['「就是因為不懂，所以才問啊。」', s => { say('you', '就是因為不懂。所以才問啊。'); act('明德叔公沒有回答，不過他多看了你一眼。'); op('mingde', 1); }],
-        ['「是我不懂，還是你們這些長輩從來沒跟我說？」', s => { say('you', '是我不懂，還是你們這些長輩從來沒跟我說？'); act('明德叔公端著茶杯的手停了一下。他沒有看你，只把杯子放回桌上，杯底磕出一聲響。'); say('mingde', '你說「你們」是在說誰啊？'); act('你沒有立刻回答，但明德叔公抬起眼看向你。'); say('mingde', '你今天是回來整理你阿公的東西，還是想要吵架？'); }]
+        ['「是我不懂，還是你們這些長輩從來沒跟我說？」', s => { say('you', '是我不懂，還是你們這些長輩從來沒跟我說？'); act('明德叔公端著茶杯的手停了一下。他沒有看你，只把杯子放回桌上，杯底磕出一聲響。'); say('mingde', '你說「你們」是在說誰啊？');say('mingde', '你今天是回來整理你阿公的東西，還是想要吵架？'); }]
       ]);
     } },
     { id: 'fire', label: '「五十年前燒的？那是誰拿去燒的？」', when: s => s.facts.fire, run: s => {
@@ -1026,38 +1008,32 @@ const T1 = {
     { id: 'rice', label: '「那阿公備那麼多糯米是要做什麼？」', when: s => s.items.includes('rice'), run: s => {
       say('you', '那阿公備那麼多糯米是要做什麼？');
       say('mingde', '他有提過要用。等一下再說，你先把東西收好。');
-      say('mingde', '你阿公就是這樣，先把東西備好，後面的事慢慢才講。');
       s.flags.askedRice = 1;
     } }
   ],
   yuzhen: [
     { id: 'name', label: '「那她叫什麼？」', when: s => s.facts.who, run: s => {
       say('you', '那她叫什麼？');
-      say('yuzhen', '阿嬤教我的是族名，不是這個漢名。紙上是不是同一個人可能還要再對。');
+      say('yuzhen', '阿嬤教我的是族名，不是這個漢名。');
       act('玉珍張了張嘴，卻沒有發出聲音。她皺起眉，低頭又看了一次紙上的字。');
       say('yuzhen', '等一下……我有點忘記怎麼念了。');
-      say('you', '一點都不記得了嗎？');
-      say('yuzhen', '呃……我阿嬤都過世多久了，現在突然要我想起怎麼念就卡住了。');
       fact('name'); s.flags.forgot = 1;
       ask('你怎麼回？', [
         ['「好吧，那我等妳想起來。」', s => { say('you', '好，我等妳想起來。想起多少再跟我說就好。'); act('玉珍看了你一下，點點頭。'); say('yuzhen', '我再想想看，我記得阿嬤以前不只講過一次……說不定等我想起她那時候在講什麼，就會記得了。'); op('yuzhen', 1); }],
-        ['「妳記得多少就說多少。」', s => { say('you', '妳記得多少就說多少。'); say('yuzhen', '我試一下……'); act('她試著想發幾個音又停住。'); say('shichang', '一個音也想不起來嗎？'); act('玉珍抬頭看他，眉頭蹙得更緊。世昌原本向前傾著，見她低下頭又慢慢坐回去。'); say('yuzhen', '你們先別一起問啦，我越想越亂欸。'); act('她將杯子放回桌上，低頭想了一會兒。'); say('yuzhen', '……讓我先想想阿嬤那時候跟我說的話。'); s.flags.pressed = 1; }]
+        ['「妳記得多少就說多少。」', s => { say('you', '妳記得多少就說多少。'); say('yuzhen', '我試一下……'); act('她試著想發幾個音又停住。'); say('shichang', '一個音也想不起來嗎？');say('yuzhen', '你們先別一起問啦，我越想越亂欸。');say('yuzhen', '……讓我先想想阿嬤那時候跟我說的話。'); s.flags.pressed = 1; }]
       ]);
     } },
     { id: 'jh', label: '「妳為什麼找建和來？」', run: s => {
       say('you', '妳為什麼找建和來？');
-      say('yuzhen', '我之前準備考族語中高級，有去旁聽他的課。這次是想可能會有需要，就問他能不能來幫我。');
-      act('建和把膝上的小冊子翻開，停在一張夾著書籤的空白頁。');
-      say('jianhe', '她之前有跟我提過，不過她在電話裡也說不太清楚到底要我幫些什麼。想說當面聊，可能比較容易。');
-      say('yuzhen', '我只怕最後讓你白跑一趟。');
+      say('yuzhen', '我之前旁聽過他的族語課，想說今天可能用得到。');
+      say('jianhe', '她電話裡也說不太清楚要我幫什麼，想說當面聊比較容易。');
       say('jianhe', '沒關係啦。');
     } }
   ],
   shichang: [
     { id: 'why', label: '「你為什麼約大家？」', run: s => {
       say('you', '你為什麼約大家？');
-      say('shichang', '我在查我們家的事啊，都查了快十多年了。戶政事務所、舊相簿、還能講話的長輩，全都一個一個找，一個一個問。');
-      say('shichang', '現在戶政事務所的小姐齁，看到我都會先皺眉嘆氣，然後問我今天又要查什麼。');
+      say('shichang', '我在查我們家的事，查了十多年了。戶政事務所、舊相簿、長輩，一個一個問。');
       say('shichang', '照片裡是我阿公的阿嬤，這個我早就知道。可是阿公講的族名，我記不完整，跟戶籍上的名字也對不起來。');
     } },
     { id: 'fire', label: '「你說你也帶了東西？」', run: s => {
@@ -1070,16 +1046,14 @@ const T1 = {
   jianhe: [
     { id: 'name', label: '「你懂族語的話，那個名字……」', run: s => {
       say('you', '你懂族語的話，那個名字……你有辦法幫她想起來嗎？');
-      say('jianhe', '如果她能想起幾個音，我可以幫忙一起想。');
       say('jianhe', '如果她能想起幾個音，我可以幫忙一起想，或者拿去問部落裡的其他老人家，看有沒有人聽過。');
       say('you', '所以現在還沒辦法知道？');
-      say('jianhe', '對啊，還不能確定。有些名字太久沒用，所以我們不知道是正常，有些則是念起來很像，所以要再核對。');
+      say('jianhe', '對，還不能確定。有些名字太久沒用，要再核對。');
       fact('jh');
     } },
     { id: 'why', label: '「你平常在哪裡教族語？」', run: s => {
       say('you', '你平常在哪裡教族語？');
       say('jianhe', '市區的國小啊，不過最近比較多時間待在部落。我教族語教了三年了啦，那些小朋友齁，今天學、明天就還我，比信用卡還款還準時呢。');
-      act('建和自嘲地笑了一下。');
     } }
   ],
   wenbin: [
@@ -1087,14 +1061,10 @@ const T1 = {
       say('you', '你帶了什麼資料？');
       act('文彬打開資料夾，從幾份影本裡抽出一頁轉向你。');
       show('archive');
-      say('wenbin', '我以前蒐集的一些舊戶籍資料。世昌來找我的時候，我回去翻了一下，然後找到這一頁。你看這裡，原來寫的名字被劃掉了，旁邊另外又補了字。');
-      say('you', '底下原本寫什麼還看得出來嗎？');
-      say('wenbin', '有幾筆是還看得到啦，但字不完整。');
+      say('wenbin', '這是我蒐集的舊戶籍資料。你看，原來的名字被劃掉，旁邊又補了字。');
       say('shichang', '可是至少能確定，她的名字是被改過的吧？');
       act('文彬把你帶來的資料挪到影本旁邊，讓兩張紙並排。');
-      say('wenbin', '這一欄確實改過。不過我們還得先確認這兩份資料寫的是不是同一個人。至於為什麼改，這頁也沒有註明。');
-      say('shichang', '我還以為你這邊查到呢。');
-      say('wenbin', '怎麼可能。不過是有找到一些，只是還沒全部對上。你之前說親屬記載不一樣，是哪一欄？我們等等一起看。');
+      say('wenbin', '這一欄確實改過。但兩份是不是同一個人、為什麼改，都還要查。');
       fact('wb');
     } }
   ]
@@ -1111,7 +1081,7 @@ function yuzhenWho(s) {
     act('「我們三個」。她看了你，又看了世昌。');
     fact('who');
   };
-  const wrong = (line) => s => { tick(10); say('yuzhen', line); act('你們又對著那一欄看了好一會兒。'); say('yuzhen', '所以是戶長的媽媽。戶長是你阿公的爸爸那一輩。'); after(); };
+  const wrong = (line) => s => { if (!S.easy) tick(10); say('yuzhen', line); act('你們又對著那一欄看了好一會兒。'); say('yuzhen', '所以是戶長的媽媽。戶長是你阿公的爸爸那一輩。'); after(); };
   ask('「母」是誰的媽媽？', [
     ['阿公的媽媽', wrong('不是喔。戶籍上的稱謂是跟戶長比的，戶長不是你阿公。')],
     ['戶長的媽媽', s => { say('you', '稱謂是跟戶長的，所以這應該就是戶長的媽媽。'); say('yuzhen', '也是。戶長是你阿公的爸爸那一輩，所以她再往上一代。'); after(); }],
@@ -1146,12 +1116,11 @@ const IDLE1 = {
 
 // ---------------- 第二章：老屋 ----------------
 const PLACES2 = {
-  room2: { title: '阿公的房間', mood: '房間裡還是那股消不去的樟腦丸味。你又拿起那個鐵盒。這一次，手指碰到了那條手帕——它比一條手帕該有的厚度再厚了些。', objects: [
+  room2: { title: '阿公的房間', mood: '你又拿起那個鐵盒。這次碰到那條手帕，發現它比平常厚了些。', objects: [
     { id: 'hanky', label: '打開手帕', when: s => !s.items.includes('letter'), run: s => {
       act('你把手帕一層一層打開。');
-      act('裡面包著幾張信紙。摺痕很深，像是被打開又摺回去很多次。');
+      act('裡面包著幾張信紙，是阿公的字，比你記得的更小，也更抖。');
       show('letter');
-      act('那是阿公的字，比你記得的更小，也更抖。');
       act('第一行寫著：「阿翔：」');
       act('你在床邊坐下來。');
       item('letter'); openLetter();
@@ -1188,16 +1157,13 @@ const PLACES2 = {
     { id: 'yz1', label: '一起整理廚房的櫃子', once: true, run: s => {
       act('玉珍蹲在櫃子前，把幾個疊在一起的碗移出來。你替她扶住櫃門，隨後看見最裡面還放著一只舊鐵罐。');
       say('you', '這個也拿出來嗎？');
-      act('玉珍回頭看了一眼，伸手拿起鐵罐。她沿著邊緣慢慢扳開蓋子，裡面墊著一塊褪色的布，放著幾塊乾燥的米色小圓塊。');
+      act('玉珍扳開蓋子，裡面墊著褪色的布，放著幾塊米色的小圓塊。');
       show('qu');
       say('yuzhen', '……這是麴。我阿嬤以前拿來的，原來伯公還留著喔。');
       say('you', '拿來釀酒的？');
       say('yuzhen', '嗯。以前他們會一起做。後來次數越來越少，但阿嬤還是會拿做好的麴送給伯公。');
       act('她把鐵罐放到桌上，撥開卡在蓋子裡的布角。');
       say('yuzhen', '我有一次問阿嬤，又沒有人要釀酒，幹嘛還一直做。她就說太久沒做手會忘記。');
-      say('you', '那妳有跟她學嗎？');
-      say('yuzhen', '是有幫過忙，可是都是等她叫我做什麼，我才做什麼。現在要我自己從頭做一次，我也不會。');
-      act('你看向流理臺旁的米缸，又低頭看了看罐裡的麴。');
       say('you', '阿公準備那些糯米，會不會也是想再做一次？');
       say('yuzhen', '有可能。不過這個麴放太久了，應該是不能拿來用了。');
       act('她蓋好鐵罐，把鐵罐放在桌上。');
@@ -1211,7 +1177,7 @@ const PLACES2 = {
       say('you', '你在聽什麼？');
       act('建和睜開眼睛，像是被抓到偷懶的學生。');
       say('jianhe', '我阿嬤以前唱的歌啦。那時候想留她的聲音，就拿手機錄下來了。');
-      act('建和摘下一邊耳機，把手機螢幕轉過來。畫面停在一段沒有正式標題的錄音上，檔名只有日期。');
+      act('建和把手機螢幕轉過來，錄音的檔名只有日期。');
       show('rec');
       say('you', '她在唱什麼？');
       say('jianhe', '有點像介紹自己……唱她叫什麼名字、是哪一家的人，住在哪裡什麼的。');
@@ -1250,10 +1216,10 @@ const PLACES2 = {
   ] },
   porch: { title: '廊下', mood: '廊下的燈泡下，世昌靠在他那台舊車，手上捧著一個布包。', person: 'shichang', objects: [
     { id: 'sc1', label: '看他手上的照片', once: true, run: s => {
-      act('世昌把布包一層一層打開，動作慢到你懷疑他是不是在拖時間。');
-      act('最裡面是一張黑白照片。照片薄得像葉子，有一大部分燒焦，焦黑的邊緣捲起來。');
+      act('世昌把布包一層層打開。');
+      act('裡面是一張大半燒焦的黑白照片。');
       show('photo');
-      act('照片上的人站在一棟茅草、木頭建蓋的房子前，臉的地方已經看不太清楚了，只剩一個站得很直的影子。');
+      act('照片上的人站在茅草木屋前，臉看不清了，只剩一個站得很直的影子。');
       act('世昌把照片翻過來，背面有一行鉛筆淡字：「昭和十四年　春」。');
       item('photo');
       say('shichang', '我阿公有說，照片是他阿嬤。我拿去問別的老人，有人也認得，還會講她以前幫過誰。');
@@ -1270,8 +1236,6 @@ const PLACES2 = {
       say('shichang', '對啊，而且他每次都拖到最後，回來還想直接伸手拿東西吃。她就會打他的手，叫他先去洗。');
       act('說到這裡，世昌笑了一下。');
       say('shichang', '阿公講這段的時候，還會學她的口氣，講完自己一直笑。');
-      say('you', '你還記得他怎麼說嗎？');
-      say('shichang', '不太記得了。那時候只覺得阿公又在講以前的事，沒仔細聽。');
       act('他把照片放回布上，這次沒有立刻包起來。');
       say('shichang', '後來我開始查這些，我一直問他照片哪裡來、那晚發生什麼事。這種吃飯、洗手的小事，反而沒再問過。');
       fact('meal');
@@ -1343,6 +1307,23 @@ function fresh() { return { started: true, runId: newRun(), ch: 1, place: 'room'
 let S = LS.get('game', null);
 let U = { overlay: null, home: !!(S && S.started) };
 function save() { LS.set('game', S); }
+// 讀過的台詞（跨局保存），重玩時可以「略過已讀」
+const SEEN = LS.get('seen', {});
+const lineKey = (w, t) => { let h = 5381; const x = (w || '') + '|' + t; for (let i = 0; i < x.length; i++) h = (h * 33 + x.charCodeAt(i)) >>> 0; return h.toString(36); };
+let seenDirty = 0;
+function markSeen(d) { if (!d || !d.t || d.w === '!' || d.w === '@') return; const k = lineKey(d.w, d.t); d.seen = !!SEEN[k]; if (!SEEN[k]) { SEEN[k] = 1; if (++seenDirty > 4) flushSeen(); } }
+function flushSeen() { seenDirty = 0; LS.set('seen', SEEN); }
+addEventListener('pagehide', flushSeen);
+// 一路略過讀過的台詞，遇到沒讀過的、選項，或錄音等安靜段落就停下
+function skipRead() {
+  for (let guard = 0; guard < 500 && U.dlg; guard++) {
+    if (U.cinema) { finishScene(); if (!U.dlg) break; }
+    if (U.silent || /錄/.test(U.dlg.t)) break; // 錄音段落一定停下來
+    if (U.dlg.w !== '!' && U.dlg.w !== '@' && !U.dlg.seen) break;
+    U.dlg.n = U.dlg.t.length; flow();
+  }
+  flushSeen(); render();
+}
 
 // ---- 敘事動作 ----
 function say(who, t, emotion = emotionFor(who, t)) { S.log.push({ w: who, t, emotion }); }
@@ -1358,7 +1339,7 @@ function op(who, n) { S.open[who] = (S.open[who] || 0) + n; }
 function ask(prompt, opts) { S.pending = { prompt, opts: opts.map(o => o[0]) }; PENDING = opts.map(o => o[1]); }
 let PENDING = [];
 // ---- 時間 ----
-function tick(m) { S.time = (S.time || 0) + m; if (S.dl && S.time > S.dl) S.time = S.dl; } // 時間到上限就停住，不再往上加
+function tick(m) { if (S.easy) m = Math.ceil(m / 2); S.time = (S.time || 0) + m; if (S.dl && S.time > S.dl) S.time = S.dl; } // 時間到上限就停住，不再往上加
 const hm = t => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
 function goPlace(p) { S.place = p; S.sel = null; S.qsel = null; const P = placeDef(p); if (P && P.title && S.ch === 2) divider(P.title); if (P && P.enter && !S.done['enter_' + p]) { S.done['enter_' + p] = 1; P.enter(S); } }
 function endChapter(n) { S.card = n; S.pending = null; }
@@ -1381,10 +1362,9 @@ const HALL2 = { title: '堂屋', mood: '大家陸續回到桌邊。', people: ['
     act('明德看了一眼信紙，沒有伸手拿。');
     if (s.facts.mdburn) say('you', '叔公，你剛才說東西是你拿出去的。阿公也寫到那晚，所以我想把事情問清楚。');
     else say('you', '阿公寫了五十年前燒東西的事。他說他也在。');
-    act('世昌把筆記本放到桌上，挪開旁邊的茶杯。');
     say('shichang', '好，那就從這裡開始吧。');
     say('mingde', '要講什麼就講。不過我先說，那時候燒東西是家裡一起決定的。');
-    hostline('明德和文彬各有說法要釐清。走到他旁邊，或到桌邊，拿出東西、引用筆記，或請別人說。拿錯東西，明德會越來越不耐煩。');
+    hostline(s.easy ? '頭上有「⋯」的人有說法要釐清。走過去，拿出東西或請別人說。' : '明德和文彬各有說法要釐清。走到他旁邊或桌邊回應。拿錯東西，明德會越來越不耐煩。');
   } };
 
 // ◆ 是誰提議要燒？
@@ -1431,7 +1411,6 @@ function proposalTalk() {
   say('yuzhen', '她用過的東西也是？');
   say('mingde', '嗯。衣服、照片，還有她以前替人做事時會用到的東西。');
   say('you', '為什麼？');
-  act('明德低頭搓了搓手指。');
   say('mingde', '我那時候說……燒了吧。燒了，就沒有人再笑我們了。');
   act('大家沉默著。');
   say('yuzhen', '……我阿嬤說她有攔，她把東西拿回屋裡了，可你又搬出去。');
@@ -1455,16 +1434,12 @@ function fearTalk(by) {
   say('shichang', '我阿公也說有人來問過。可是沒講清楚問什麼。');
   say('mingde', '問那個人住哪裡、跟誰說過話，有沒有寄信來。他們說在查政治案件，要查跟他往來的人。');
   say('you', '那個人做了什麼？');
-  say('mingde', '我不知道，他們沒跟我講。我只記得人走了以後，你阿公叫我們出去不要亂說，有人問就回來告訴他。');
+  say('mingde', '我不知道。人走了以後，你阿公叫我們出去不要亂說。');
   say('yuzhen', '所以你才想把信燒掉？');
   say('mingde', '……嗯。後來阿嬤不在了，我們整理東西又翻出那些信，我就想到以前來問的人。');
-  say('you', '那些信真的是借宿的人寫的？');
-  say('mingde', '我沒有一封封看，也沒弄清楚。我那時候覺得，只要有人名、地址，都可能被拿來問。');
   const after = () => {
     act('文彬把一張空白紙移到世昌旁邊。');
     say('wenbin', '叔公記得的先寫下，其他的我們再慢慢查。');
-    say('shichang', '你帶的資料找得到嗎？');
-    say('wenbin', '之後要另外找，現在也不能答應一定查得到。');
     fact('fear'); S.q.qf = 1;
   };
   ask('你想問什麼？', [
@@ -1478,12 +1453,9 @@ function photoAtTable() {
   if (!S.items.includes('photo')) { act('世昌起身去車上，帶回包著照片的布包。'); item('photo'); }
   act('世昌把照片平放在桌上，燒焦的那一部分，朝著明德。');
   show('photo');
-  say('you', '我再確認一下，照片裡的是我們阿公他們的阿嬤？');
-  say('shichang', '對。');
-  say('yuzhen', '是我們三個的高祖母。');
+  say('yuzhen', '這是我們三個的高祖母。');
   say('mingde', '這是她，就是在舊屋前面拍的。');
   fact('photo_id');
-  act('世昌把照片轉向明德。');
   say('shichang', '我阿公說，他看見照片也被丟出去燒，就跑過去撿起來。');
   say('shichang', '你那時候有看到他嗎？');
   say('mingde', '……我知道是他撿的。');
@@ -1492,7 +1464,6 @@ function photoAtTable() {
   say('mingde', '沒有。');
   say('shichang', '……他十年前才過世，你們明明在這期間碰過那麼多次面。');
   say('mingde', '我想著他沒提，我也不要提。拖到後來更不知道怎麼開口了。');
-  say('shichang', '他也沒跟我說過後來有沒有找你談，但這張照片他一直留著。');
   fact('fireside');
   if (S.flags.mdHurt) { act('明德叔公把手插回口袋，沒有再說話。'); S.q.qs = 1; return; }
   if (!S.items.includes('fragment')) {
@@ -1500,7 +1471,6 @@ function photoAtTable() {
     show('fragment');
     say('mingde', '火快熄的時候，我撿了這個。');
     item('fragment');
-    say('mingde', '原本放在家裡。知道今天要整理，我出門前才把它找出來。');
     fact('frag');
   }
   ask('你要說什麼嗎？', [
@@ -1534,10 +1504,9 @@ function leftTalk() {
 // ◆ 那一夜之後，為什麼沒再告訴我們？
 function silenceTalk() {
   say('you', '……那為什麼從沒告訴我們你們阿嬤的事情？');
-  say('yuzhen', '我阿嬤有講，只是每次講一點。做東西的時候提到，以前去哪裡的時候，想起了回憶時也會提到。');
+  say('yuzhen', '我阿嬤有講，只是每次講一點。');
   say('yuzhen', '那晚的事，她只說燒完以後，她氣得不想再跟大家說話，回房間哭了很久。');
   say('yuzhen', '說什麼都沒有了，以後小孩問起要拿什麼給他們看？');
-  act('世昌抬起頭。');
   say('shichang', '她知道我阿公留了這張嗎？');
   say('yuzhen', '她大概是不知道吧。');
   say('mingde', '……');
@@ -1566,7 +1535,7 @@ function puzPick(side, id) {
   if (side === 'L') { P.pick = id; return; }
   if (!P.pick) { P.err = '先點左邊謄本上的一欄。'; return; }
   const l = P.pick; P.pick = null;
-  if (l === 'L1' && id === 'R1') { P.conv = true; return; }
+  if (l === 'L1' && id === 'R1') { if (S.easy) return puzConv('', '', true); P.conv = true; return; }
   if (l === 'L2' && id === 'R2') { P.pairs.order = 1; say('you', '出生別都是三女。'); say('wenbin', '這一項是相符。'); return puzCheck(); }
   if (l === 'L3' && id === 'R3') { say('you', '一個是母，一個是妻，這樣算嗎？'); say('wenbin', '還得要看各自的戶長是誰。同一個人在不同的戶籍裡，可能有不同關係，不能只靠這兩個去判斷。'); return; }
   say('wenbin', '這兩欄記的事情不一樣，先找同一種資料來比。');
@@ -1580,36 +1549,36 @@ function puzConv(a, b, help) {
 function puzCheck() {
   const P = S.puz;
   if (!(P.pairs.birth && P.pairs.order)) return;
-  say('wenbin', '這兩項相符，但要確認完整關係，還得把戶長、親屬和前後頁一起看。');
+  say('wenbin', '這兩項相符。完整關係還要再查。');
   if (S.items.includes('photo')) { act('世昌翻到照片背面。'); say('shichang', '這裡只有寫昭和十四年春，沒寫年紀。所以只能知道哪年拍的？'); say('wenbin', '對，不能用拍攝年份算她幾歲。'); }
   say('shichang', '那名字為什麼被劃掉？日本人改的？');
-  say('wenbin', '這份資料是在日治時期建立的，不代表每一筆改動都發生在同一個時候。這裡看得出改寫，但原字不完整，也沒有註明原因。');
-  if (S.q.qf) { say('you', '跟後來有人來問話有沒有關係啊？'); say('wenbin', '現在沒有資料能把兩件事連起來，也還不能確定改寫發生在焚燒以前或以後。'); }
+  say('wenbin', '看得出改寫，但原字不完整，也沒寫原因。');
+  if (S.q.qf) { say('you', '跟後來有人來問話有沒有關係啊？'); say('wenbin', '現在沒有資料能把兩件事連起來。'); }
   else say('wenbin', '先記下有改寫，時間與原因都還不知道。');
   fact('same'); S.q.qd = 1; S.mode = null;
 }
 // 2-8 整理桌面：〔新增〕推理題，答錯會被更正並多花十分鐘
 const DEDUCE = [
-  { q: '世昌寫：「先提議燒掉信件的，是＿＿。」', opts: [['明德叔公', 1], ['明仁', 0], ['玉珍的阿嬤', 0], ['來問話的人', 0]], who: 'shichang', bad: '不對吧，叔公剛才自己說了，是他先提的。' },
+  { q: '世昌寫：「先提議燒掉信件的，是＿＿。」', easy: 1, opts: [['明德叔公', 1], ['明仁', 0], ['玉珍的阿嬤', 0], ['來問話的人', 0]], who: 'shichang', bad: '不對吧，叔公剛才自己說了，是他先提的。' },
   { q: '「根據是＿＿。」', opts: [['明德叔公自己承認的', 1], ['阿公的信上寫的', 0]], who: 'wenbin', bad: '信上只寫「有人提出要燒」，沒有寫是誰。是叔公自己承認的。' },
-  { q: '「照片是＿＿從火邊撿回來的。」', opts: [['世昌的阿公', 1], ['明德叔公', 0], ['玉珍的阿嬤', 0], ['明仁', 0]], who: 'shichang', bad: '叔公撿的是那片厚紙。照片是我阿公撿的。', alt: '叔公沒有撿東西。照片是我阿公撿的。' },
+  { q: '「照片是＿＿從火邊撿回來的。」', easy: 1, opts: [['世昌的阿公', 1], ['明德叔公', 0], ['玉珍的阿嬤', 0], ['明仁', 0]], who: 'shichang', bad: '叔公撿的是那片厚紙。照片是我阿公撿的。', alt: '叔公沒有撿東西。照片是我阿公撿的。' },
   { q: '「兩份戶籍上的人，＿＿。」', opts: [['已經確定是同一個人', 0], ['出生日期、出生別相符，還要看完整親屬資料', 1], ['不是同一個人', 0]], who: 'wenbin', bad: '還不能這樣寫。目前只有兩項相符，要把戶長、親屬和前後頁一起看。' },
   { q: '「阿公備糯米，是因為＿＿。」', when: s => s.facts.left, opts: [['想再釀一次酒', 1], ['要煮給大家吃', 0], ['不知道', 0]], who: 'yuzhen', bad: '叔公剛才說了，伯公想再做一次。' }
 ];
 function end2() {
   S.flags.end2 = 1; S.flags.dmiss = 0;
   act('世昌把筆記本轉向你。');
-  say('shichang', '幫我看一下有沒有哪裡記錯。我一句一句念，你幫我填。');
+  say('shichang', S.easy ? '幫我看一下有沒有記錯。' : '幫我看一下有沒有哪裡記錯。我一句一句念，你幫我填。');
   act('你挪開茶盤，讓兩份影本可以並排。');
   deduce(0);
 }
 function deduce(i, removed) {
-  while (i < DEDUCE.length && DEDUCE[i].when && !DEDUCE[i].when(S)) i++;
+  while (i < DEDUCE.length && ((DEDUCE[i].when && !DEDUCE[i].when(S)) || (S.easy && !DEDUCE[i].easy))) i++;
   if (i >= DEDUCE.length) return end2Close();
   const D = DEDUCE[i], gone = removed || [];
   ask(D.q, D.opts.filter(o => !gone.includes(o[0])).map(([t, ok]) => [t, s => {
     if (ok) { act(`你說：「${t}。」世昌把它寫進去。`); return deduce(i + 1); }
-    tick(10); S.flags.dmiss++;
+    if (!S.easy) tick(10); S.flags.dmiss++;
     act(`你說：「${t}。」`);
     say(D.who, D.alt && !S.items.includes('fragment') ? D.alt : D.bad);
     deduce(i, gone.concat([t]));
@@ -1619,7 +1588,7 @@ function end2Close() {
   if (S.flags.dmiss === 0) say('shichang', '……你記得比我還清楚。');
   else say('shichang', '好，改過來了。');
   act('玉珍把鐵罐放回靠牆的小桌，建和拿來一張乾淨的紙，整理剛才提過、還需要再問的事情。');
-  hostline('你們已經知道那晚有人焚燒、有人反對，也有人留下東西。還沒弄清楚的先分開記。');
+  hostline('那晚有人焚燒、有人反對，也有人留下東西。還沒弄清楚的先記下來。');
   U.pendingPanel = 'nb'; S.newFacts = 0;
   U.afterPanel = () => { act('關掉筆記本後，玉珍轉向明德。'); say('yuzhen', '叔公，你以前有聽過別人叫她的名字嗎？'); endChapter(3); };
 }
@@ -1629,11 +1598,7 @@ const HALL3 = { title: '堂屋', mood: '還記得多少，就先從那裡開始�
   enter: s => {
     act('明德往椅背靠了一下，想了幾秒。');
     say('mingde', '……都多久了，我都已經忘了差不多了。我們以前都叫她阿嬤。來找她的人，有些是會叫她的名字。');
-    say('yuzhen', '你還記得嗎？');
-    act('明德張了張嘴又頓住。');
     say('yuzhen', '我也一直想不完整。阿嬤以前叫我幫忙做麴，會一邊做、一邊講小時候的事，我想從那時候的話找找看。');
-    say('you', '妳說，做麴的時候會講以前的事？');
-    act('玉珍看向靠牆的鐵罐。');
     say('yuzhen', '有一次我幫她切葉子時沒做好，她叫我重切。她說她以前也這樣被她阿嬤念。');
     say('yuzhen', '那次她有講到名字。我想想前面那句話……');
     recallTry();
@@ -1653,17 +1618,13 @@ function recallTry() {
   act('你點頭，等她準備好才按下錄音。');
   act('玉珍把剛才想起的那一小段又念了一次，連阿嬤當時說的前後幾句也一起講了。');
   act('你停下錄音。');
-  say('yuzhen', '我回去找看看阿嬤的日記，說不定還能找到別的。');
-  say('yuzhen', '她的東西有幾箱放在舅舅家，我記得看過那本，但不知道搬家以後收在哪裡。');
   item('tape'); S.flags.keep = 'tape';
   shichangAsk();
 }
 function shichangAsk() {
-  act('世昌把筆記本翻回前面。有幾頁貼著便條旁邊寫滿名字與箭頭。');
   say('shichang', '我以前一直想把這個空格填起來。族名、紙上的漢名，還有中間幾代的資料，全部對在一起。');
   say('you', '現在呢？');
   say('shichang', '現在還是想知道啊。只是今天才發現，我阿公以前講的那些小事，我也沒記多少。');
-  act('他看了照片一眼。');
   say('shichang', '我一直問誰燒的、為什麼燒。反而他在講吃飯、洗手那些回憶時，我一直以為他在已讀亂回，想把話拉回來。');
   const after = () => {
     say('shichang', '叔公，我下次還是會來問你。');
@@ -1680,8 +1641,6 @@ function shichangAsk() {
 function jianheHelp() {
   act('建和把筆記轉向玉珍。');
   say('jianhe', '妳之後想到別的可以先傳給我。我再問問我認識的長輩，看他願不願意幫忙。');
-  say('you', '他會知道嗎？');
-  say('jianhe', '不一定，不過可能知道這個名字，也可能認識你們家，但都得問了才知道。');
   if (S.facts.rec) { say('you', '你阿嬤唱那首歌的時候，一開始就有講自己的名字。'); say('jianhe', '對啊，但你們還是要找認識你們這一家的人，才有可能會回想起記憶。'); }
   else say('jianhe', '我有留自己阿嬤唱歌的錄音，她在裡面介紹自己。之後有空可以給你聽。你們家的名字，還是得另外找認識她的人問。');
   planTalk();
@@ -1690,11 +1649,9 @@ function planTalk() {
   act('世昌把照片放回布上。');
   say('shichang', '那接下來怎麼找？總不能每個人回去又各查各的。');
   say('wenbin', '戶籍的部分，我可以再找完整的親屬資料，也可以教你們怎麼查資料、做系譜。');
-  say('yuzhen', '我回去找阿嬤的日記。她有幾箱東西放在舅舅家，那本是不是還在，要先問他。名字我也再想看看，但不要明天早上就跑來問我想起來沒有。');
-  act('世昌笑了一下。');
-  say('shichang', '好啦。');
+  say('yuzhen', '我回去找阿嬤的日記。名字我也再想看看，但不要明天早上就跑來問我想起來沒有。');
   ask('你想怎麼做？', [
-    ['約一個時間再一起整理。', s => { S.plan = {}; planWhen(); }],
+    ['約一個時間再一起整理。', s => { S.plan = {}; S.easy ? planQuick() : planWhen(); }],
     ['先各自找，有消息再聯絡。', s => {
       say('you', '我先把手上的整理好。大家有找到什麼再互相說。');
       say('yuzhen', '好。我找到日記後再拍給你們看。');
@@ -1704,11 +1661,9 @@ function planTalk() {
     }],
     ['今天先到這裡，我想回去想一想。', s => {
       say('you', '我今天知道的有點多。先不要幫我排下一次，我想帶回去看一看。');
-      act('玉珍點頭。');
       say('yuzhen', '好。有想到要問什麼再傳給我。');
       act('世昌把你的謄本與信放回你面前。');
       say('shichang', '你把這兩份收好。之後有需要什麼你再來問我。');
-      act('明德叔公看了看門外。');
       say('mingde', '你今天睡這裡還是要回去？');
       say('you', '太晚了，我今晚先住這裡。');
       S.flags.R = 'pause'; closeTalk();
@@ -1717,6 +1672,14 @@ function planTalk() {
 }
 const PLAN_WHEN = [['下個月第一個週六下午', 'meet'], ['下週六晚上八點先通話，再決定見面時間', 'call']];
 const PLAN_WHAT = ['整理她的生活往事', '核對名字與親屬資料', '整理當年問話與焚燒的時間線'];
+// 輕鬆模式：時間和要做的事一次選好，由奕翔聯絡
+function planQuick() {
+  ask('約什麼時候、做什麼？', [
+    ['下個月第一個週六下午，一起核對名字與親屬資料', s => { Object.assign(S.plan, { when: PLAN_WHEN[0][0], kind: 'meet', what: PLAN_WHAT[1], who: 'me' }); planConfirm(); }],
+    ['下個月第一個週六下午，一起整理她的生活往事', s => { Object.assign(S.plan, { when: PLAN_WHEN[0][0], kind: 'meet', what: PLAN_WHAT[0], who: 'me' }); planConfirm(); }],
+    ['下週六晚上先通話，再決定見面時間', s => { Object.assign(S.plan, { when: PLAN_WHEN[1][0], kind: 'call', what: PLAN_WHAT[0], who: 'me' }); planConfirm(); }]
+  ]);
+}
 function planWhen() { ask('什麼時候？', PLAN_WHEN.map(([t, k]) => [t, s => { S.plan.when = t; S.plan.kind = k; planWhat(); }])); }
 function planWhat() { ask('做什麼？', PLAN_WHAT.map(t => [t, s => { S.plan.what = t; planWho(); }])); }
 function planWho() {
@@ -1740,7 +1703,7 @@ function planConfirm() {
 function closeTalk() {
   act('快十二點了。玉珍把杯子收進茶盤，建和蹲下去拔充電線。');
   act('世昌在椅縫裡找到車鑰匙，又折回桌邊把照片放進硬紙夾。');
-  hostline('離開桌邊以前，你還想向誰說一句話？也可以直接幫忙收拾。');
+  hostline('離開前，想對誰說一句話？');
   ask('你要對誰說？', [
     ['對叔公。', s => { say('you', '叔公，下次你想到什麼，可以打給我。'); act('你把電話寫在便條上，放到他面前。'); say('mingde', '白天可以打？啊你不是要上班？'); say('you', '如果我沒接到，我下班會回的。'); act('明德叔公將便條摺好，收進口袋。'); wrapUp(); }],
     ['對世昌。', s => { say('you', '照片下次可以再給我看嗎？你阿公講過的其他事，我也想聽。'); say('shichang', '可以啊，你如果有想到你阿公講過什麼也跟我說。'); wrapUp(); }],
@@ -2163,7 +2126,7 @@ function hall1Menu(w) {
   if (!S.done['w_' + w]) o.push({ label: '什麼都不說，陪他坐一下', fn: () => { tick(10); S.done['w_' + w] = 1; WAIT1[w](S); } });
   if (w === 'shichang' && HALL1.exitWhen(S)) o.push({ label: '「我們分頭整理吧。」', cls: 'pri', fn: () => HALL1.exit(S) });
   o.push({ label: '離開', fn: () => {} });
-  setMenu('h1' + w, `${n}｜${st}\n每做一件事約 10 分鐘`, o);
+  setMenu('h1' + w, S.easy ? `${n}｜${st}` : `${n}｜${st}\n每做一件事約 10 分鐘`, o);
 }
 function wenbinCh2() {
   if (!S.items.includes('letter')) { say('wenbin', '我在這裡等。你先去你阿公的房間看看吧，就在左上那扇門。'); return; }
@@ -2175,15 +2138,19 @@ function hall2Menu(w) {
   const n = PEOPLE[w].name, open = openBeats(), mine = open.filter(b => b.who === w), o = [];
   mine.forEach(b => o.push({ label: `回應：「${b.claim}」`, cls: 'pri', fn: () => beatRespond(b) }));
   const hb = open.find(b => b.who !== w && b.hint && b.hint[w]);
-  if (hb) o.push({ label: '問問他的看法（約 10 分鐘）', fn: () => { tick(10); S.sel = w; say('you', `${n}，你怎麼看？`); say(w, hb.hint[w]); } });
+  if (hb) o.push({ label: S.easy ? '問問他的看法' : '問問他的看法（約 10 分鐘）', fn: () => { tick(10); S.sel = w; say('you', `${n}，你怎麼看？`); say(w, hb.hint[w]); } });
   // 〔新增〕陪明德坐一下，可以恢復一點耐心（只能一次）
-  if (w === 'mingde' && !S.done.h2wait) o.push({ label: '什麼都不說，陪他坐一下（約 10 分鐘）', fn: () => { S.done.h2wait = 1; tick(10); act('你把明德叔公面前冷掉的茶倒掉，重新倒了一杯，在他旁邊坐下。'); act('明德喝了一口，稍微放鬆了一點。'); S.pat = Math.min(PAT_MAX, S.pat + 1); } });
+  if (w === 'mingde' && !S.done.h2wait) o.push({ label: S.easy ? '什麼都不說，陪他坐一下' : '什麼都不說，陪他坐一下（約 10 分鐘）', fn: () => { S.done.h2wait = 1; tick(10); act('你把明德叔公面前冷掉的茶倒掉，重新倒了一杯，在他旁邊坐下。'); act('明德喝了一口，稍微放鬆了一點。'); S.pat = Math.min(PAT_MAX, S.pat + 1); } });
   if (o.length === 0) return act(IDLE1[w] || '');
   o.push({ label: '離開', fn: () => {} });
-  setMenu('h2' + w, w === 'mingde' ? `明德｜耐心 ${PAT()}` : n, o);
+  setMenu('h2' + w, w === 'mingde' && !S.easy ? `明德｜耐心 ${PAT()}` : n, o);
 }
 function beatRespond(b) {
   const sp = PEOPLE[b.who].name, back = { label: '返回', fn: () => beatRespond(b) };
+  // 輕鬆模式：東西和人放在同一份清單，一次選
+  if (S.easy) return setMenu('br' + b.id, `${sp}：「${b.claim}」\n拿出東西，或請別人說：`, S.items.map(i => ({ label: '拿出：' + ITEMS[i].name, fn: () => judge(b, 'item', i) }))
+    .concat(Object.keys(PEOPLE).filter(p => p !== b.who).map(p => ({ label: '請' + PEOPLE[p].name + '說', fn: () => judge(b, 'who', p) })))
+    .concat([{ label: '先不回應', fn: () => {} }]));
   setMenu('br' + b.id, `${sp}：「${b.claim}」\n你要怎麼回應？（每次約 10 分鐘${b.who === 'mingde' ? `；明德耐心 ${PAT()}` : ''}）`, [
     { label: '拿出東西⋯', dis: !S.items.length, fn: () => setMenu('bi' + b.id, '拿出什麼？', S.items.map(i => ({ label: ITEMS[i].name, fn: () => judge(b, 'item', i) })).concat([back])) },
     { label: '引用筆記⋯', dis: !S.factOrder.length, fn: () => setMenu('bf' + b.id, '引用筆記上的哪一條？', S.factOrder.filter(f => FACTS[f][2]).map(f => ({ label: FACTS[f][2], fn: () => judge(b, 'fact', f) })).concat([back])) },
@@ -2197,7 +2164,7 @@ function judge(b, k, id) {
   if (k === 'who') { say('you', `${PEOPLE[id].name}，你怎麼看？`); say(id, (b.miss && b.miss[id]) || '這個……我不清楚。'); return; }
   act(k === 'item' ? `你把${ITEMS[id].name}放到${PEOPLE[b.who].name}面前。` : `你提起筆記上的一條：「${FACTS[id][2]}」`, k === 'item' ? [Stage.prop('you', id, 'place', [SEATS[b.who][0] * TS + 8, SEATS[b.who][1] < 4 ? 70 : 84])] : undefined);
   const L = WRONG[b.who] || WRONG.mingde; S.wrongN = (S.wrongN || 0) + 1; say(b.who, L[S.wrongN % L.length]);
-  if (b.who === 'mingde') {
+  if (b.who === 'mingde' && !S.easy) {
     S.pat--;
     if (S.pat <= 0) {
       // 耐心用完：這段強制往下，由別人把話接過去；耐心回滿，之後的段落照常由玩家回應
@@ -2236,7 +2203,7 @@ function flow() {
       U.dlg = { w: '!', t: '', n: 0, emotion: 'neutral' }; U.menu = null; startScene(steps);
       if (U.cinema) return render();
     }
-    U.dlg = { w: e.w, t: e.t, n: 0, emotion: e.emotion || LINE_EMOTIONS.get(e.t) || 'neutral' }; U.menu = null;
+    U.dlg = { w: e.w, t: e.t, n: 0, emotion: e.emotion || LINE_EMOTIONS.get(e.t) || 'neutral' }; U.menu = null; markSeen(U.dlg);
     startScene(steps);
     return render();
   }
@@ -2287,12 +2254,12 @@ function goalText() {
   if (S.ch === 1 && S.place === 'room') return S.items.includes('tengben') ? '到堂屋去（下面的門）' : '整理阿公的房間';
   if (S.ch === 1 && !S.flags.round) return `跟桌邊的人打招呼（${['mingde', 'yuzhen', 'shichang', 'jianhe', 'wenbin'].filter(x => S.met && S.met[x]).length}/5）`;
   if (S.ch === 1) { if (HALL1.exitWhen(S)) return '可以分頭整理了（找世昌）'; const g = HALL1.goals.find(g => !g[1](S)); return g ? '想弄清楚：' + g[0] : ''; }
-  if (S.ch === 2 && S.place === 'hall2') { const n = BEATS.filter(b => b.need && !S.q[b.id]).length; return n ? `◆ 還差 ${n} 件事｜明德 ${PAT()}` : S.flags.end2 ? '' : '可以到桌邊整理了'; }
+  if (S.ch === 2 && S.place === 'hall2') { const n = BEATS.filter(b => b.need && !S.q[b.id]).length; return n ? (S.easy ? `◆ 還差 ${n} 件事` : `◆ 還差 ${n} 件事｜明德 ${PAT()}`) : S.flags.end2 ? '' : '可以到桌邊整理了'; }
   if (S.ch === 2) return S.items.includes('letter') ? '到屋外找人說話｜或回堂屋找文彬' : '去阿公的房間（左上的門）';
   return '';
 }
 function clockText() {
-  if (!S || !S.time || !S.dl || S.card || S.ch >= 3 || S.flags.end2) return '';
+  if (!S || S.easy || !S.time || !S.dl || S.card || S.ch >= 3 || S.flags.end2) return '';
   const left = Math.max(0, S.dl - S.time);
   if (S.ch === 1 && S.place === 'hall1' && S.flags.round) return `${hm(S.time)}｜分頭前 ${left} 分`;
   if (S.ch === 2 && S.place !== 'hall2') return `${hm(S.time)}｜回堂屋前 ${left} 分`;
@@ -2313,7 +2280,7 @@ function render() {
   $('mbtn').innerHTML = '選單' + (S && S.newFacts ? '<i></i>' : '');
   // 封面
   const cv = $('cover');
-  if (!home && U.dlg && U.dlg.w === '@') { const I = INTRO[U.dlg.who]; cv.hidden = false; cv.className = 'cover introc'; cv.innerHTML = `<div class="ic"><canvas class="icb" width="40" height="48"></canvas><div class="ici"><span class="icmeet">${I.meet}</span><h2>${I.full}</h2><p class="ictag">${I.age} 歲｜${I.tag}</p><p class="icrel">${esc(I.rel)}</p><p class="icq">${esc(I.quote)}</p></div></div>`; const bc = cv.querySelector('.icb').getContext('2d'); bc.imageSmoothingEnabled = false; bc.drawImage(bust(U.dlg.who), 0, 0); }
+  if (!home && U.dlg && U.dlg.w === '@') { const I = INTRO[U.dlg.who]; cv.hidden = false; cv.className = 'cover introc'; cv.innerHTML = `<div class="ic"><canvas class="icb" width="40" height="48"></canvas><div class="ici"><span class="icmeet">${I.meet}</span><h2>${I.full}</h2><p class="ictag">${I.age} 歲｜${I.tag}</p></div></div>`; const bc = cv.querySelector('.icb').getContext('2d'); bc.imageSmoothingEnabled = false; bc.drawImage(bust(U.dlg.who), 0, 0); }
   else if (!home && S.card && !U.panel && !U.dlg) { cv.hidden = false; cv.className = 'cover'; const sub = { 1: '頭七過後，你留下來整理阿公的房間。', 2: '分頭整理老屋。每個人手上，可能都有那一夜的一塊。', 3: '還記得多少，就先從那裡開始。' }[S.card]; cv.innerHTML = `<span class="n">${CHN[S.card].split('｜')[0]}</span><h2>${CHN[S.card].split('｜')[1]}</h2><p>${sub}</p>`; }
   else if (!home && U.waiting) { cv.hidden = false; cv.className = 'cover silence'; cv.innerHTML = `<p>你在等。</p><div class="bar"><i class="run" style="--dur:${RM ? 1.5 : 6}s"></i></div>`; }
   else cv.hidden = true;
@@ -2342,6 +2309,7 @@ function paintBox() {
     const cls = w === 'you' ? 'you' : w === '#' ? 'host nar' : isP ? '' : 'nar';
     const shown = d.t.slice(0, d.n);
     bx.innerHTML = `<div class="dlg ${cls}${isP && !pb ? ' nopor' : ''}" data-adv="1">${pb ? '<canvas class="por" width="32" height="32"></canvas>' : ''}<div>${isP ? `<span class="nm">${NAMEOF(w)}</span>` : w === '#' ? '<span class="nm" style="color:var(--host)">——</span>' : ''}<p class="tx">${esc(shown).replace(/§/g, '')}</p></div></div>${d.n >= d.t.length && !U.cinema ? '<span class="more">▼</span>' : ''}`;
+    if (d.seen && !U.silent && !U.cinema) bx.insertAdjacentHTML('beforeend', '<button class="skipr" type="button" data-skipr="1">略過已讀 ▶▶</button>');
     if (pb) { const pc = bx.querySelector('.por').getContext('2d'); pc.imageSmoothingEnabled = false; pc.drawImage(bust(pb, d.emotion), 4, 3, 32, 32, 0, 0, 32, 32); }
     return;
   }
@@ -2356,28 +2324,34 @@ function paintBox() {
   bx.innerHTML = `<div class="idle"><b>${place}</b><span>${idleHint()}</span></div>`;
 }
 function idleHint() {
-  if (S.ch === 1 && S.place === 'room') return S.items.includes('tengben') ? '謄本上那個人是誰？走到下面的門，去堂屋。' : '房間裡的東西，走過去點點看。頭上有「⋯」的，還有東西可以看。';
-  if (S.ch === 1 && !S.flags.round) return '走到每個人旁邊打招呼。第一次見面的人，會跟你自我介紹。';
-  if (S.ch === 1) return '時間有限，聊不完全部。問問題、拿東西給對的人看，或陪他坐一下。紙上那個人是誰？先找認得的人。';
-  if (S.place === 'hall2') return '頭上有「⋯」的人，有說法要你回應：拿出東西、引用筆記，或請別人說。拿錯東西明德會不耐煩。其他人可以給提示，但要花時間。';
-  if (S.ch === 2) return curMap() === 'out' ? '大家散在房子四周：屋後、廚房簷下、院子、廊下。時間有限，談不完全部，選你想聽的。' : '左上的門通往阿公的房間（不花時間），下面的門通到屋外。';
+  if (S.ch === 1 && S.place === 'room') return S.items.includes('tengben') ? '走到下面的門，去堂屋。' : '走過去點點看。頭上有「⋯」的，還有東西可以看。';
+  if (S.ch === 1 && !S.flags.round) return '走到每個人旁邊打招呼。';
+  if (S.ch === 1) return S.easy ? '紙上那個人是誰？拿謄本給認得的人看。' : '時間有限，聊不完全部。紙上那個人是誰？先找認得的人。';
+  if (S.place === 'hall2') return S.easy ? '頭上有「⋯」的人有說法要你回應。' : '頭上有「⋯」的人有說法要你回應。拿錯東西明德會不耐煩。';
+  if (S.ch === 2) return curMap() === 'out' ? (S.easy ? '大家在屋後、廚房簷下、院子、廊下。找人說說話。' : '大家在屋後、廚房簷下、院子、廊下。時間有限，選你想聽的。') : '左上的門通往阿公的房間，下面的門通到屋外。';
   return '';
 }
 function homeHTML() {
   const has = S && S.started;
   return `<div class="home"><div style="height:clamp(16px,8vw,70px)"></div><h2>被遺忘的名字</h2><p class="sub">Mapawanay a ngangan</p>
   <p>你是陳奕翔，二十五歲，在台北做設計。<br>阿公過世後，你回到部落的老屋——</p>
-  <div class="ph">${has ? `<button class="pbtn pri" data-h="resume">繼續上次</button><button class="pbtn" data-h="new">從頭開始</button>` : `<button class="pbtn pri" data-h="new">開始</button>`}</div>
+  ${has ? `<div class="ph"><button class="pbtn pri" data-h="resume">繼續上次</button></div>` : ''}
+  <div class="ph modes"><button class="pbtn ${has ? '' : 'pri'}" data-h="new">${has ? '從頭開始・' : ''}輕鬆模式<small>第一次玩推薦：沒有時間壓力，提示比較多。</small></button><button class="pbtn" data-h="newfull">${has ? '從頭開始・' : ''}完整模式<small>有時間限制和叔公的耐心，可能錯過部分對話。</small></button></div>
   ${window.PWA && PWA.canInstall() ? '<div class="ph"><button class="pbtn" data-install="1">安裝成 App</button><span class="small">裝好後會出現在主畫面，離線也能玩。</span></div>' : ''}${window.PWA && PWA.iosHint() ? '<p class="small">iPhone／iPad：用 Safari 開啟，點下方「分享」，選「加入主畫面」，就能像 App 一樣全螢幕玩。</p>' : ''}
   <div class="ph"><button class="pbtn" data-bgm="1" aria-pressed="${BGM.on}">背景音樂：${BGM.on ? '開' : '關'}</button></div>
-  <p class="small">點地板走路，點人或東西互動。頭上有「⋯」的，還有話可以說、東西可以看。問法不一樣，別人的反應也不一樣。你知道的事會記在「選單」裡的筆記本。</p>
-  <div class="warn">故事會碰到家人遺物被焚燒、名字被改寫、因政治案件的問話而害怕，以及家人多年不提的沉默。無暴力或恐怖畫面，劇中不演出任何祭儀。約四十分鐘，可以隨時暫停；有背景音樂，可在右上角關掉。</div></div>`;
+  <p class="small">點地板走路，點人或東西互動。頭上有「⋯」的還有話可以說。知道的事會記在「選單」的筆記本。</p>
+  <div class="warn">故事會碰到家人遺物被焚燒、名字被改寫、因政治案件的問話而害怕，以及家人多年的沉默。無暴力或恐怖畫面，不演出任何祭儀。約四十分鐘，可隨時暫停；背景音樂可在右上角關掉。</div></div>`;
 }
 function notebookCols() {
   const g = { saw: [], rem: [], told: [] };
   S.factOrder.forEach(f => g[FACTS[f][0]].push(FACTS[f][1]));
   const unk = UNKNOWN.filter(u => u[1](S)).map(u => u[0]);
   const col = (t, a) => `<section><h4>${t}</h4>${a.length ? `<ul>${a.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '<span class="small">還沒有</span>'}</section>`;
+  if (S.easy) {
+    const TAG = { saw: '紙上', rem: '本人說', told: '聽說' };
+    const known = S.factOrder.map(f => `<li><span class="tagk">〔${TAG[FACTS[f][0]]}〕</span>${esc(FACTS[f][1])}</li>`);
+    return `<div class="cols"><section><h4>知道的</h4>${known.length ? `<ul>${known.join('')}</ul>` : '<span class="small">還沒有</span>'}</section>${col('還要查的', unk)}</div>`;
+  }
   return `<div class="cols">${col('紙上看得見', g.saw)}${col('當事人記得', g.rem)}${col('長輩曾經轉述', g.told)}${col('還需要查證', unk)}</div>`;
 }
 function panelHTML() {
@@ -2387,7 +2361,9 @@ function panelHTML() {
   let goals = '';
   if (S.ch === 1 && S.place === 'hall1') goals = `<div class="card2"><span class="small">今晚你想弄清楚的事</span><ul>${HALL1.goals.map(g => `<li>${g[1](S) ? '✓ ' : ''}${g[0]}</li>`).join('')}</ul></div>`;
   if (S.place === 'hall2') goals = `<div class="card2"><span class="small">要釐清的說法（◆ 今晚一定要弄清楚；有些要先釐清前面的才會浮現）</span><ul>${BEATS.map(b => S.q[b.id] ? `<li>✓ ${b.need ? '◆ ' : ''}${b.label}</li>` : b.open(S) ? `<li>${b.need ? '◆ ' : ''}${PEOPLE[b.who].name}：「${esc(b.claim)}」</li>` : `<li class="small">${b.need ? '◆ ' : ''}（還沒浮現的說法）</li>`).join('')}</ul></div>`;
-  return `<div class="ph">${back()}<h3>筆記本</h3></div>${goals}${notebookCols()}
+  const met = Object.keys(INTRO).filter(w => S.met && S.met[w]);
+  const ppl = met.length ? `<details class="card2"><summary>人物（${met.length}）</summary><ul>${met.map(w => `<li><b>${esc(INTRO[w].full)}</b>｜${esc(INTRO[w].tag)}。${esc(INTRO[w].rel)}</li>`).join('')}</ul></details>` : '';
+  return `<div class="ph">${back()}<h3>筆記本</h3></div>${goals}${notebookCols()}${ppl}
   <h3 style="font-size:16px">隨身物品</h3><div class="itemlist">${S.items.length ? S.items.map(i => `<div>${ART[i] ? `<canvas class="thumb" data-art="${i}" width="96" height="72"></canvas>` : ''}<b>${ITEMS[i].name}</b>${esc(ITEMS[i].text)}${i === 'letter' ? ' <button class="pbtn" data-p="letter">讀信</button>' : ''}</div>`).join('') : '<span class="small">你手上還沒有東西。</span>'}</div>
   <div class="ph">${back('回到故事')}<button class="pbtn" data-p="pause">暫停</button></div>`;
 }
@@ -2408,14 +2384,14 @@ function endHTML() {
   <p class="lastline"><b>${esc(NAMEOF(lw))}</b>${esc(lt)}</p>
   <p class="small">慢慢讀。讀完再往下。</p>
   <h3>把奕翔留在這裡</h3><p>你是你自己，不是奕翔。剛才那些選擇是奕翔的。祖先的名字沒有出現在這個畫面上，今晚也還沒有被確認。</p>
-  <h3>你今晚拼出來的</h3>${notebookCols()}
-  ${miss.length ? `<h3>今晚沒有走到的對話</h3><ul>${miss.map(m => `<li>${esc(m[1])}</li>`).join('')}</ul><details class="small"><summary>查看未走到的內容</summary><ul>${miss.map(m => `<li>${esc(m[2])}</li>`).join('')}</ul></details>` : ''}
+  <details><summary><b>你今晚拼出來的</b></summary>${notebookCols()}</details>
+  ${miss.length ? `<details><summary><b>今晚沒有走到的對話（${miss.length}）</b></summary><ul>${miss.map(m => `<li>${esc(m[1])}</li>`).join('')}</ul><details class="small"><summary>怎麼走到</summary><ul>${miss.map(m => `<li>${esc(m[2])}</li>`).join('')}</ul></details></details>` : ''}
+  <details><summary><b>故事與史實說明</b></summary><p>本劇家族、借宿與問話事件為虛構情節，不得以劇中情節當作真實個案史料。</p>
   <p class="small">多人版裡，其他五個人由真人扮演，事情可能走到別的地方：叔公可能一句都不說，玉珍可能想起更多，也可能今晚什麼都想不起來。</p>
-  <h3>故事與史實說明</h3><p>本劇家族、借宿與問話事件為虛構情節，不得以劇中情節當作真實個案史料。</p>
-  <p class="small">背景音樂為原創合成，未取材任何傳統曲調。</p>
+  <p class="small">背景音樂為原創合成，未取材任何傳統曲調。</p></details>
   <p>如果你想起了自己家裡答不出來的某個名字，那是屬於你家人的事。問或不問，什麼時候問，都由你決定。</p>
   ${FEEDBACK.html(FEEDBACK.run())}
-  <div class="ph"><button class="pbtn" data-h="new">從頭再玩一次</button></div>
+  <div class="ph"><button class="pbtn" data-h="new">再玩一次・輕鬆模式</button><button class="pbtn" data-h="newfull">再玩一次・完整模式</button></div>
   <p class="small">字型：俐方體11號（Cubic 11，SIL Open Font License 1.1）。</p>`;
 }
 
@@ -2482,7 +2458,7 @@ function draw(now) {
   if (U.fade > 0) { ctx.fillStyle = `rgba(0,0,0,${U.fade})`; ctx.fillRect(0, 0, 192, 144); }
   if (!home && U.sceneDark > 0) { ctx.fillStyle = `rgba(0,0,0,${U.sceneDark})`; ctx.fillRect(0, 0, 192, 144); }
   // 打字
-  if (U.dlg && U.dlg.n < U.dlg.t.length) { U.dlg.n = RM ? U.dlg.t.length : Math.min(U.dlg.t.length, U.dlg.n + 1); if (now - (draw.lt || 0) > 60 || U.dlg.n >= U.dlg.t.length) { draw.lt = now; paintBox(); } }
+  if (U.dlg && U.dlg.n < U.dlg.t.length) { U.dlg.n = RM || (S && S.easy) ? U.dlg.t.length : Math.min(U.dlg.t.length, U.dlg.n + 1); if (now - (draw.lt || 0) > 60 || U.dlg.n >= U.dlg.t.length) { draw.lt = now; paintBox(); } }
 }
 
 // ---------- 輸入 ----------
@@ -2503,6 +2479,7 @@ cvs.addEventListener('click', ev => {
 document.addEventListener('click', ev => {
   const t = ev.target;
   if (t.closest('#skip-scene')) return finishScene();
+  if (t.closest('[data-skipr]')) return skipRead();
   if (U.cinema && !t.closest('[data-adv]') && !t.closest('#box') && !t.closest('#sbtn')) return;
   if (t.closest('[data-adv]')) return advance();
   const o = t.closest('[data-o]'); if (o) return choose(+o.dataset.o);
@@ -2516,7 +2493,7 @@ document.addEventListener('click', ev => {
   if (t.closest('#box') && U.dlg) return advance();
 });
 function homeAct(a) {
-  if (a === 'new') { try { localStorage.removeItem('bwjm.rpg2.game'); } catch (e) {} S = fresh(); Object.assign(U, { cinema: null, playerSeated: false, cg: null, home: false, cur: 0, dlg: null, menu: null, panel: null, pendingPanel: null }); setMap('room', 5, 6, 1); window.scrollTo(0, 0); return flow(); }
+  if (a === 'new' || a === 'newfull') { try { localStorage.removeItem('bwjm.rpg2.game'); } catch (e) {} S = fresh(); S.easy = a === 'new'; Object.assign(U, { cinema: null, playerSeated: false, cg: null, home: false, cur: 0, dlg: null, menu: null, panel: null, pendingPanel: null }); setMap('room', 5, 6, 1); window.scrollTo(0, 0); return flow(); }
   if (a === 'resume') { U.home = false; U.cur = S.log.length; syncP(); return flow(); }
 }
 function panelAct(a) {
@@ -2535,7 +2512,7 @@ function puzAct(z) {
 function enterCard() {
   const n = S.card; S.card = null;
   if (n === 1) { S.ch = 1; S.place = 'room'; setMap('room', 5, 6, 1); act('阿公的東西還堆在房間裡。你站在門口，不知道要從哪裡開始。'); act('走過去，看看房間裡的東西。'); }
-  if (n === 2) { S.ch = 2; S.log = []; U.cur = 0; S.place = 'map'; S.time = 21 * 60; S.dl = S.time + 50; setMap('hall', 5, 7, 1); act('長輩說分頭整理。大家散進屋子的各個角落。'); act('文彬留在桌邊。你可以去阿公的房間，也可以到屋外找人說話。準備好了，就回來找文彬。'); }
+  if (n === 2) { S.ch = 2; S.log = []; U.cur = 0; S.place = 'map'; S.time = 21 * 60; S.dl = S.time + 50; setMap('hall', 5, 7, 1); act('長輩說分頭整理。大家散進屋子的各個角落。'); act('文彬留在桌邊。去阿公的房間或屋外看看，準備好再回來找他。'); }
   if (n === 3) { S.ch = 3; S.log = []; U.cur = 0; S.sel = null; setMap('hall', 7, 6, 1); U.playerSeated = true;
     S.log.push({ w: '!', steps: [Stage.fade(1, 0, 900)] });
     goPlace('hall3'); }
